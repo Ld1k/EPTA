@@ -2,12 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ЕПТА - Лента</title>
     <link rel="stylesheet" href="../you/style.css">
     <link rel="stylesheet" href="feed.css">
 </head>
 <body>
+    <!-- Фоновое видео -->
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="../oboi/video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
     <div class="falling-numbers" id="fallingNumbers"></div>
 
     <div class="burger-menu" id="burgerMenu">
@@ -19,16 +25,16 @@
         <div class="menu-panel" id="menuPanel">
             <div class="menu-content">
                 <a href="feed.html" class="menu-item active">
-                    <img src="../png/grid.png" class="icon-20" alt=""> Лента
+                    <img src="../png/grid.png" class="menu-icon" alt=""> Лента
                 </a>
                 <a href="../you/index.html" class="menu-item">
-                    <img src="../png/portrait.png" class="icon-20" alt=""> Профиль
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
                 </a>
                 <a href="#" class="menu-item">
-                    <img src="../png/sun.png" class="icon-20" alt=""> Настройки
+                    <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
                 </a>
                 <a href="#" class="menu-item">
-                    <img src="../png/comment.png" class="icon-20" alt=""> Чаты
+                    <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
                 </a>
             </div>
         </div>
@@ -112,8 +118,6 @@
             </div>
         </div>
     </div>
-
-    <div class="notification" id="notification"></div>
 
     <script src="../you/comments.js"></script>
     <script src="../you/reposts.js"></script>
