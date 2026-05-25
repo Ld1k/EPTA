@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЕПТА - Лента</title>
+    <link rel="stylesheet" href="../you/style.css">
+    <link rel="stylesheet" href="feed.css">
+</head>
+<body>
+    <!-- Анимация падающих 42 -->
+    <div class="falling-numbers" id="fallingNumbers"></div>
+
+    <!-- Меню-бургер -->
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-panel" id="menuPanel">
+            <div class="menu-content">
+                <a href="feed.html" class="menu-item active">📰 Лента</a>
+                <a href="../you/index.html" class="menu-item">👤 Профиль</a>
+                <a href="#" class="menu-item">⚙️ Настройки</a>
+                <a href="#" class="menu-item">💬 Чаты</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="../you/index.html" class="logo">ЕПТА</a>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Поиск...">
+            </div>
+        </div>
+    </header>
+
+    <!-- Лента -->
+    <div class="feed-container">
+        <div class="feed-grid">
+            <!-- Основной контент -->
+            <div class="feed-main">
+                <!-- Табы -->
+                <div class="feed-tabs">
+                    <button class="feed-tab active" onclick="switchFeedTab(this, 'recommendations')">🔥 Рекомендации</button>
+                    <button class="feed-tab" onclick="switchFeedTab(this, 'popular')">⭐ Популярное</button>
+                    <button class="feed-tab" onclick="switchFeedTab(this, 'fresh')">🆕 Свежее</button>
+                </div>
+
+                <!-- Фильтры -->
+                <div class="filters-bar" id="filtersBar">
+                    <span class="filter-label">Сортировка:</span>
+                    <button class="filter-btn active" onclick="setFeedFilter('date', this)">По дате</button>
+                    <button class="filter-btn" onclick="setFeedFilter('views', this)">По просмотрам</button>
+                    <button class="filter-btn" onclick="setFeedFilter('reposts', this)">По репостам</button>
+                    <button class="filter-btn" onclick="setFeedFilter('likes', this)">По лайкам</button>
+                    <button class="filter-btn" onclick="setFeedFilter('comments', this)">По комментариям</button>
+                </div>
+
+                <!-- Контент ленты -->
+                <div class="feed-content" id="feedContent">
+                    <div id="feedPosts"></div>
+                </div>
+            </div>
+
+            <!-- Сайдбар -->
+            <aside class="feed-sidebar">
+                <!-- Популярные хештеги -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">🔥 Популярные хештеги</div>
+                    <div class="hashtags-cloud">
+                        <a href="#" class="hashtag">#ЕПТА</a>
+                        <a href="#" class="hashtag">#toxicGreen</a>
+                        <a href="#" class="hashtag">#кодинг</a>
+                        <a href="#" class="hashtag">#музыка</a>
+                        <a href="#" class="hashtag">#дизайн</a>
+                        <a href="#" class="hashtag">#технологии</a>
+                        <a href="#" class="hashtag">#гейминг</a>
+                        <a href="#" class="hashtag">#спорт</a>
+                        <a href="#" class="hashtag">#кино</a>
+                        <a href="#" class="hashtag">#юмор</a>
+                        <a href="#" class="hashtag">#42</a>
+                        <a href="#" class="hashtag">#разработка</a>
+                    </div>
+                </div>
+
+                <!-- Популярные посты -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">⭐ Популярные посты</div>
+                    <div class="popular-posts">
+                        <div class="popular-post-item">
+                            <div class="popular-post-rank">#1</div>
+                            <div class="popular-post-info">
+                                <div class="popular-post-text">Топовые фичи нового обновления!</div>
+                                <div class="popular-post-stats">❤️ 1.2K | 💬 342 | 🔄 89</div>
+                            </div>
+                        </div>
+                        <div class="popular-post-item">
+                            <div class="popular-post-rank">#2</div>
+                            <div class="popular-post-info">
+                                <div class="popular-post-text">Как я создал свой первый проект за 24 часа</div>
+                                <div class="popular-post-stats">❤️ 987 | 💬 234 | 🔄 56</div>
+                            </div>
+                        </div>
+                        <div class="popular-post-item">
+                            <div class="popular-post-rank">#3</div>
+                            <div class="popular-post-info">
+                                <div class="popular-post-text">Лучшие практики 2024 года</div>
+                                <div class="popular-post-stats">❤️ 756 | 💬 189 | 🔄 34</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="in-development">🚧 В разработке</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../you/comments.js"></script>
+    <script src="../you/reposts.js"></script>
+    <script src="../you/likes.js"></script>
+    <script src="feed.js"></script>
+</body>
+</html>

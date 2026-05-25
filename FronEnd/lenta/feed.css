@@ -1,0 +1,283 @@
+/* Стили для ленты */
+.feed-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+/* Основной контент ленты */
+.feed-main {
+    min-width: 0;
+}
+
+.feed-tabs {
+    display: flex;
+    background: rgba(34, 34, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    border: 2px solid #61DE2A;
+    border-bottom: none;
+}
+
+.feed-tab {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888888;
+    transition: all 0.3s;
+}
+
+.feed-tab:hover {
+    background: rgba(97, 222, 42, 0.05);
+    color: #61DE2A;
+}
+
+.feed-tab.active {
+    color: #61DE2A;
+    background: rgba(97, 222, 42, 0.1);
+    border-bottom: 3px solid #61DE2A;
+}
+
+.feed-content {
+    background: rgba(34, 34, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 12px 12px;
+    padding: 20px;
+    border: 2px solid #61DE2A;
+    border-top: none;
+    min-height: 600px;
+}
+
+/* Посты в ленте */
+.feed-post {
+    padding: 20px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid #333333;
+    transition: all 0.3s;
+}
+
+.feed-post:hover {
+    border-color: #61DE2A;
+    background: rgba(97, 222, 42, 0.05);
+}
+
+.feed-post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.feed-post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(34, 34, 34, 0.95);
+    border: 2px solid #61DE2A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.feed-post-info {
+    flex: 1;
+}
+
+.feed-post-author {
+    font-weight: 700;
+    font-size: 15px;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feed-post-date {
+    color: #666666;
+    font-size: 13px;
+}
+
+.feed-post-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.feed-post-tag {
+    color: #61DE2A;
+    font-size: 12px;
+    text-decoration: none;
+    background: rgba(97, 222, 42, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.feed-post-tag:hover {
+    background: rgba(97, 222, 42, 0.2);
+}
+
+.feed-post-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #cccccc;
+    word-break: break-word;
+}
+
+.feed-post-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+}
+
+.feed-post-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.feed-post-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Сайдбар ленты */
+.feed-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Облако хештегов */
+.hashtags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hashtag {
+    padding: 6px 12px;
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid rgba(97, 222, 42, 0.3);
+    border-radius: 15px;
+    color: #61DE2A;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+
+.hashtag:hover {
+    background: rgba(97, 222, 42, 0.2);
+    border-color: #61DE2A;
+    box-shadow: 0 0 15px rgba(97, 222, 42, 0.2);
+}
+
+/* Популярные посты */
+.popular-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.popular-post-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid #333;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.popular-post-item:hover {
+    border-color: #61DE2A;
+    background: rgba(97, 222, 42, 0.05);
+}
+
+.popular-post-rank {
+    font-size: 24px;
+    font-weight: 800;
+    color: #61DE2A;
+    min-width: 40px;
+    text-align: center;
+}
+
+.popular-post-info {
+    flex: 1;
+}
+
+.popular-post-text {
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-bottom: 5px;
+}
+
+.popular-post-stats {
+    font-size: 11px;
+    color: #666;
+}
+
+/* В разработке */
+.in-development {
+    text-align: center;
+    padding: 15px;
+    margin-top: 15px;
+    background: rgba(255, 170, 0, 0.1);
+    border: 1px solid #ffaa00;
+    border-radius: 10px;
+    color: #ffaa00;
+    font-size: 14px;
+}
+
+/* Активный пункт меню */
+.menu-item.active {
+    background: rgba(97, 222, 42, 0.15);
+    color: #61DE2A;
+    border-left: 3px solid #61DE2A;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .feed-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feed-sidebar {
+        order: 2;
+    }
+    
+    .feed-post {
+        padding: 15px;
+    }
+    
+    .feed-tab {
+        padding: 12px;
+        font-size: 13px;
+    }
+}
