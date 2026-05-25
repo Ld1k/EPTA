@@ -1,0 +1,13 @@
+{
+  "name": "epta-profile",
+  "version": "1.0.0",
+  "description": "Профиль в стиле ЕПТА",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["profile", "epta", "social"],
+  "author": "",
+  "license": "ISC"
+}
