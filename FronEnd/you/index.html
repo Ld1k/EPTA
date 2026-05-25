@@ -2,11 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ЕПТА - Профиль</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Фоновое видео -->
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="../oboi/video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
     <div class="falling-numbers" id="fallingNumbers"></div>
 
     <div class="burger-menu" id="burgerMenu">
@@ -18,16 +24,16 @@
         <div class="menu-panel" id="menuPanel">
             <div class="menu-content">
                 <a href="../lenta/feed.html" class="menu-item">
-                    <img src="../png/grid.png" class="icon-20" alt=""> Лента
+                    <img src="../png/grid.png" class="menu-icon" alt=""> Лента
                 </a>
                 <a href="#" class="menu-item">
-                    <img src="../png/portrait.png" class="icon-20" alt=""> Профиль
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
                 </a>
                 <a href="#" class="menu-item">
-                    <img src="../png/sun.png" class="icon-20" alt=""> Настройки
+                    <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
                 </a>
                 <a href="#" class="menu-item">
-                    <img src="../png/comment.png" class="icon-20" alt=""> Чаты
+                    <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
                 </a>
             </div>
         </div>
@@ -114,9 +120,11 @@
                 <div class="profile-tabs">
                     <button class="tab-btn active" onclick="switchTab(this, 'wall')">Стена</button>
                     <button class="tab-btn" onclick="switchTab(this, 'photos')">
-                        <img src="../png/picture.png" class="icon-16" alt=""> Фотки
+                        <img src="../png/camera.png" class="icon-16" alt=""> Фотки
                     </button>
-                    <button class="tab-btn" onclick="switchTab(this, 'videos')">Видео</button>
+                    <button class="tab-btn" onclick="switchTab(this, 'videos')">
+                        <img src="../png/play-alt.png" class="icon-16" alt=""> Видео
+                    </button>
                 </div>
                 
                 <div class="filters-bar" id="filtersBar">
@@ -138,11 +146,13 @@
                             <div class="post-actions-bar">
                                 <input type="file" id="fileInput" style="display:none" multiple onchange="handleFiles(this.files)">
                                 <button class="post-action-icon glass-btn" onclick="document.getElementById('fileInput').click()">
-                                    <img src="../png/picture.png" class="icon-20" alt="">
+                                    <img src="../png/camera.png" class="icon-20" alt="">
                                 </button>
                                 <div class="file-list" id="fileList"></div>
-                                <label style="color:#61DE2A;font-size:12px;display:flex;align-items:center;gap:5px;margin-left:10px">
-                                    <input type="checkbox" id="publicCheckbox"> Публичный
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="publicCheckbox">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">Публичный</span>
                                 </label>
                                 <button class="post-submit glass-btn" onclick="addPost()">
                                     <img src="../png/paper-plane.png" class="icon-18" alt="">
@@ -210,8 +220,6 @@
             </div>
         </div>
     </div>
-
-    <div class="notification" id="notification"></div>
 
     <script src="comments.js"></script>
     <script src="reposts.js"></script>
