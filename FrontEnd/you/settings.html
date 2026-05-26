@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ЕПТА - Настройки</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         * {
             margin: 0;
@@ -17,6 +16,7 @@
             background: #000000;
             color: #e0ffe0;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .background-video {
@@ -41,6 +41,7 @@
             pointer-events: none;
         }
 
+        /* Контейнер для падающих чисел */
         .falling-numbers {
             position: fixed;
             top: 0;
@@ -58,20 +59,22 @@
             font-weight: bold;
             pointer-events: none;
             animation: fallDown linear forwards;
-            text-shadow: 0 0 5px currentColor;
+            text-shadow: 0 0 8px currentColor;
+            font-family: monospace;
         }
 
-        .falling-number:nth-child(3n+1) { color: #61DE2A; }
-        .falling-number:nth-child(3n+2) { color: #3BA51A; }
-        .falling-number:nth-child(3n+3) { color: #8FDF4A; }
+        /* Матричные неоновые оттенки только для 42 */
+        .falling-number:nth-child(3n+1) { color: #00ffcc; }
+        .falling-number:nth-child(3n+2) { color: #61DE2A; }
+        .falling-number:nth-child(3n+3) { color: #3BA51A; }
 
         @keyframes fallDown {
             0% {
                 transform: translateY(-40px) rotate(0deg);
-                opacity: 0.2;
+                opacity: 0.3;
             }
             80% {
-                opacity: 0.08;
+                opacity: 0.15;
             }
             100% {
                 transform: translateY(105vh) rotate(360deg);
@@ -155,7 +158,18 @@
             height: 3px;
             background: #61DE2A;
             border-radius: 3px;
-            transition: all 0.3s;
+            transition: transform 0.3s, opacity 0.3s;
+            transform-origin: left center;
+        }
+
+        .menu-panel.active ~ .burger-icon span:nth-child(1) {
+            transform: rotate(45deg) translate(2px, -2px);
+        }
+        .menu-panel.active ~ .burger-icon span:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-panel.active ~ .burger-icon span:nth-child(3) {
+            transform: rotate(-45deg) translate(2px, 2px);
         }
 
         .menu-panel {
@@ -168,7 +182,7 @@
             backdrop-filter: blur(20px);
             border-left: 2px solid #61DE2A;
             box-shadow: -5px 0 30px rgba(97, 222, 42, 0.3);
-            transition: right 0.3s;
+            transition: right 0.3s ease;
             z-index: 999;
             overflow-y: auto;
         }
@@ -210,6 +224,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 10;
         }
 
         .settings-card {
@@ -253,6 +269,7 @@
             align-items: center;
             padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 15px;
         }
 
         .setting-info {
@@ -284,7 +301,7 @@
             border-radius: 25px;
             color: #61DE2A;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -295,6 +312,10 @@
             background: rgba(97, 222, 42, 0.2);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(97, 222, 42, 0.3);
+        }
+
+        .sound-test-btn:active {
+            transform: scale(0.95);
         }
 
         .volume-slider {
@@ -328,6 +349,7 @@
             border-radius: 25px;
             transition: all 0.3s;
             cursor: pointer;
+            user-select: none;
         }
 
         .back-link:hover {
@@ -343,6 +365,10 @@
             font-size: 12px;
             color: #61DE2A;
             text-align: center;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn {
@@ -359,28 +385,10 @@
             white-space: nowrap;
         }
 
-        .btn-primary {
-            background: rgba(97, 222, 42, 0.1);
-            color: #61DE2A;
-            border: 2px solid #61DE2A;
-        }
-
-        .btn-primary:hover {
-            background: #61DE2A;
-            color: #000;
-            box-shadow: 0 0 40px rgba(97, 222, 42, 0.5);
-        }
-
         .btn-secondary {
             background: rgba(0, 0, 0, 0.7);
             color: #888888;
             border: 1px solid #333333;
-        }
-
-        .btn-secondary:hover {
-            background: #333333;
-            border-color: #61DE2A;
-            color: #61DE2A;
         }
 
         .toggle-switch {
@@ -427,11 +435,6 @@
             box-shadow: 0 0 8px rgba(97, 222, 42, 0.6);
         }
 
-        .toggle-label {
-            color: #61DE2A;
-            font-size: 12px;
-        }
-
         .glass-btn {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
@@ -447,11 +450,6 @@
             transform: translateY(-2px);
         }
 
-        .icon-16 { width: 16px; height: 16px; object-fit: contain; }
-        .icon-18 { width: 18px; height: 18px; object-fit: contain; }
-        .icon-20 { width: 20px; height: 20px; object-fit: contain; }
-        .icon-24 { width: 24px; height: 24px; object-fit: contain; }
-
         @media (max-width: 768px) {
             .settings-card { padding: 20px; }
             .test-sound-buttons { gap: 8px; }
@@ -459,6 +457,8 @@
             .header-inner { gap: 10px; }
             .logo { font-size: 22px; }
             .menu-panel { width: 280px; right: -280px; }
+            .setting-item { flex-direction: column; align-items: flex-start; }
+            .volume-slider { width: 100%; margin-top: 10px; }
         }
     </style>
 </head>
@@ -470,19 +470,9 @@
 
     <div class="falling-numbers" id="fallingNumbers"></div>
 
-    <!-- ЕПТА Бургер меню -->
     <div class="burger-menu" id="burgerMenu">
-        <div class="burger-icon" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
         <div class="menu-panel" id="menuPanel">
             <div class="menu-content">
-                <div style="text-align: center; margin-bottom: 30px; padding: 10px;">
-                    <div style="color: #61DE2A; font-size: 24px; font-weight: 800; letter-spacing: 3px;">ЕПТА</div>
-                    <div style="color: #888; font-size: 12px; margin-top: 5px;">социальная сеть</div>
-                </div>
                 <a href="../lenta/feed.html" class="menu-item">
                     <img src="../png/grid.png" class="menu-icon" alt=""> Лента
                 </a>
@@ -495,11 +485,12 @@
                 <a href="../sms/sms.html" class="menu-item">
                     <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
                 </a>
-                <div style="margin-top: 30px; padding: 20px; border-top: 1px solid rgba(97, 222, 42, 0.2);">
-                    <div style="color: #61DE2A; font-size: 12px; text-align: center;">⚡ ЕПТА v1.0</div>
-                    <div style="color: #555; font-size: 10px; text-align: center; margin-top: 5px;">сделано с душой</div>
-                </div>
             </div>
+        </div>
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </div>
 
@@ -547,16 +538,16 @@
                 </div>
 
                 <div class="test-sound-buttons">
-                    <button class="sound-test-btn" data-sound="positive">✅ ЕПТА+</button>
-                    <button class="sound-test-btn" data-sound="negative">❌ ЕПТА-</button>
-                    <button class="sound-test-btn" data-sound="ding">🔔 ЕПТА Динь</button>
-                    <button class="sound-test-btn" data-sound="alert">⚠️ ЕПТА Сигнал</button>
-                    <button class="sound-test-btn" data-sound="click">🖱️ ЕПТА Клик</button>
-                    <button class="sound-test-btn" data-sound="success">🎉 ЕПТА Успех</button>
+                    <button class="sound-test-btn" data-sound="click">🖱 Клик (Вкл)</button>
+                    <button class="sound-test-btn" data-sound="click_off">🖱 Клик (Выкл)</button>
+                    <button class="sound-test-btn" data-sound="success">🎉 Успех</button>
+                    <button class="sound-test-btn" data-sound="error">❌ Ошибка</button>
+                    <button class="sound-test-btn" data-sound="chime">🔔 Дверной сигнал</button>
+                    <button class="sound-test-btn" data-sound="timer">⏳ Таймер</button>
                 </div>
 
                 <div class="sound-status" id="soundStatus">
-                    🎵 ЕПТА Звуки готовы! Нажми на любую кнопку.
+                    🎵 Портал-аудиосистема готова. Нажми кнопку для проверки!
                 </div>
             </div>
 
@@ -595,36 +586,12 @@
                     </button>
                 </div>
             </div>
-
-            <div class="settings-section">
-                <div class="section-title">
-                    ℹ️ О ЕПТА
-                </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-name">Версия ЕПТА</div>
-                        <div class="setting-desc">Текущая версия соцсети</div>
-                    </div>
-                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА v1.0.0\n\nЕПТА - социальная сеть для своих\nСделано с любовью и 42')">
-                        v1.0.0
-                    </button>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-name">Разработчики ЕПТА</div>
-                        <div class="setting-desc">Кто сделал эту крутую штуку</div>
-                    </div>
-                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА Сrew\n\nСделано командой ЕПТА\n2024')">
-                        ЕПТА Team
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
+        let statusTimeout;
+
         function goBack() {
             if (document.referrer && document.referrer.includes(window.location.host)) {
                 window.history.back();
@@ -636,18 +603,6 @@
         function toggleMenu() {
             const panel = document.getElementById('menuPanel');
             panel.classList.toggle('active');
-            
-            // Визуальная анимация бургера
-            const spans = document.querySelectorAll('.burger-icon span');
-            if (panel.classList.contains('active')) {
-                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-                spans[1].style.opacity = '0';
-                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-            } else {
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
-            }
         }
 
         document.addEventListener('click', function(e) {
@@ -663,15 +618,16 @@
             if (!container) return;
             
             function spawnNumber() {
+                if (container.children.length > 35) return;
+
                 const number = document.createElement('div');
                 number.className = 'falling-number';
-                const numbers = ['42', 'ЕПТА', '⚡', '🌿', '🔥'];
-                number.textContent = numbers[Math.floor(Math.random() * numbers.length)];
+                number.textContent = '42';
                 
-                const size = Math.random() * 14 + 10;
+                const size = Math.random() * 16 + 18;
                 const left = Math.random() * 100;
-                const duration = Math.random() * 12 + 8;
-                const delay = Math.random() * 5;
+                const duration = Math.random() * 6 + 6;
+                const delay = Math.random() * 2;
                 
                 number.style.cssText = `
                     left: ${left}%;
@@ -683,142 +639,72 @@
                 container.appendChild(number);
                 
                 setTimeout(() => {
-                    if (number.parentNode) number.remove();
-                }, (duration + delay) * 1000 + 500);
+                    number.remove();
+                }, (duration + delay) * 1000);
             }
             
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => spawnNumber(), i * 100);
+            for (let i = 0; i < 12; i++) {
+                setTimeout(spawnNumber, i * 250);
             }
             
-            setInterval(() => {
-                if (container.children.length < 50) {
-                    for (let i = 0; i < 3; i++) {
-                        setTimeout(() => spawnNumber(), i * 100);
-                    }
-                }
-            }, 500);
+            setInterval(spawnNumber, 700);
         }
 
         createFallingNumbers();
 
         const SoundSystem = {
-            audioContext: null,
             enabled: true,
             volume: 0.3,
+            audioCache: {},
+            
+            soundFiles: {
+                click: '../sounds_portal2/ding_on.wav',
+                click_off: '../sounds_portal2/ding_off.wav',
+                success: '../sounds_portal2/button_synth_positive_01.wav',
+                error: '../sounds_portal2/button_synth_negative_02.wav',
+                chime: '../sounds_portal2/door_open_chime_01.wav',
+                timer: '../sounds_portal2/potato_timer_01.wav'
+            },
             
             init: function() {
-                try {
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    
-                    const savedEnabled = localStorage.getItem('epta_sound_enabled');
-                    const savedVolume = localStorage.getItem('epta_sound_volume');
-                    
-                    if (savedEnabled !== null) this.enabled = savedEnabled === 'true';
-                    if (savedVolume !== null) {
-                        this.volume = parseFloat(savedVolume);
-                    }
-                    
-                    this.updateUI();
-                    console.log('🎵 ЕПТА Sound system initialized');
-                    
-                    const activateSound = () => {
-                        if (this.audioContext && this.audioContext.state === 'suspended') {
-                            this.audioContext.resume();
-                            const statusDiv = document.getElementById('soundStatus');
-                            if (statusDiv) statusDiv.innerHTML = '🔊 ЕПТА Звуки активированы! Жми на кнопки!';
-                        }
-                    };
-                    
-                    document.addEventListener('click', activateSound);
-                    document.addEventListener('touchstart', activateSound);
-                    
-                } catch (e) {
-                    console.error('Web Audio API not supported:', e);
-                }
-            },
-            
-            playTone: function(frequency, duration, volume = 0.3, type = 'sine') {
-                if (!this.enabled || !this.audioContext) return;
-                
-                if (this.audioContext.state === 'suspended') {
-                    this.audioContext.resume();
+                const savedEnabled = localStorage.getItem('epta_sound_enabled');
+                const savedVolume = localStorage.getItem('epta_sound_volume');
+                if (savedEnabled !== null) this.enabled = savedEnabled === 'true';
+                if (savedVolume !== null) this.volume = parseFloat(savedVolume);
+
+                for (let key in this.soundFiles) {
+                    this.audioCache[key] = new Audio(this.soundFiles[key]);
+                    this.audioCache[key].preload = 'auto';
                 }
                 
-                const now = this.audioContext.currentTime;
-                const gainNode = this.audioContext.createGain();
-                gainNode.gain.value = 0;
-                gainNode.connect(this.audioContext.destination);
-                
-                const oscillator = this.audioContext.createOscillator();
-                oscillator.type = type;
-                oscillator.frequency.value = frequency;
-                oscillator.connect(gainNode);
-                
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(volume * this.volume, now + 0.01);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-                
-                oscillator.start();
-                oscillator.stop(now + duration);
-            },
-            
-            playPositive: function() {
-                this.playTone(523.25, 0.2, 0.3);
-                setTimeout(() => this.playTone(659.25, 0.2, 0.3), 150);
-                setTimeout(() => this.playTone(783.99, 0.3, 0.3), 300);
-            },
-            
-            playNegative: function() {
-                this.playTone(220, 0.4, 0.25, 'sawtooth');
-            },
-            
-            playDing: function() {
-                this.playTone(880, 0.5, 0.2);
-            },
-            
-            playAlert: function() {
-                this.playTone(440, 0.3, 0.3, 'square');
-                setTimeout(() => this.playTone(440, 0.3, 0.3, 'square'), 350);
-            },
-            
-            playClick: function() {
-                this.playTone(800, 0.08, 0.15, 'triangle');
-            },
-            
-            playSuccess: function() {
-                this.playTone(523.25, 0.2, 0.3);
-                setTimeout(() => this.playTone(659.25, 0.2, 0.3), 150);
-                setTimeout(() => this.playTone(783.99, 0.3, 0.3), 300);
-                setTimeout(() => this.playTone(1046.5, 0.4, 0.25), 500);
+                this.updateUI();
             },
             
             play: function(soundName) {
                 if (!this.enabled) return;
                 
-                const sounds = {
-                    positive: () => this.playPositive(),
-                    negative: () => this.playNegative(),
-                    ding: () => this.playDing(),
-                    alert: () => this.playAlert(),
-                    click: () => this.playClick(),
-                    success: () => this.playSuccess()
-                };
-                
-                if (sounds[soundName]) {
-                    sounds[soundName]();
+                const audio = this.audioCache[soundName];
+                if (audio) {
+                    audio.currentTime = 0; 
+                    audio.volume = this.volume;
+                    audio.play().catch(err => {
+                        console.warn(`Браузер ожидает клика для воспроизведения звука "${soundName}".`);
+                    });
                 }
-            },
-            
-            setVolume: function(value) {
-                this.volume = Math.max(0, Math.min(1, value));
-                localStorage.setItem('epta_sound_volume', this.volume);
             },
             
             setEnabled: function(enabled) {
                 this.enabled = enabled;
                 localStorage.setItem('epta_sound_enabled', enabled);
                 this.updateUI();
+            },
+            
+            setVolume: function(volume) {
+                this.volume = volume;
+                localStorage.setItem('epta_sound_volume', volume);
+                for (let key in this.audioCache) {
+                    this.audioCache[key].volume = volume;
+                }
             },
             
             updateUI: function() {
@@ -828,31 +714,38 @@
                 if (slider) slider.value = this.volume * 100;
             }
         };
-        
+
+        window.SoundSystem = SoundSystem;
+        window.Sounds = SoundSystem;
+
         document.addEventListener('DOMContentLoaded', function() {
             SoundSystem.init();
             
             const soundToggle = document.getElementById('soundToggle');
             const volumeSlider = document.getElementById('volumeSlider');
+            const statusDiv = document.getElementById('soundStatus');
             
             if (soundToggle) {
                 soundToggle.addEventListener('change', function(e) {
                     SoundSystem.setEnabled(e.target.checked);
+                    if (statusDiv) {
+                        statusDiv.innerHTML = e.target.checked ? '🔊 Звуки ЕПТА активированы' : '🔇 Звук полностью отключен';
+                    }
                 });
             }
             
             if (volumeSlider) {
                 volumeSlider.addEventListener('input', function(e) {
-                    SoundSystem.setVolume(e.target.value / 100);
-                    const statusDiv = document.getElementById('soundStatus');
-                    if (statusDiv) statusDiv.innerHTML = `🔊 ЕПТА Громкость: ${e.target.value}%`;
-                    setTimeout(() => {
-                        if (statusDiv && !soundToggle.checked) {
-                            statusDiv.innerHTML = '🔇 ЕПТА Звуки выключены';
-                        } else if (statusDiv) {
-                            statusDiv.innerHTML = '🔊 ЕПТА Звуки активны! Жми на кнопки!';
+                    const volValue = e.target.value;
+                    SoundSystem.setVolume(volValue / 100);
+                    if (statusDiv) statusDiv.innerHTML = `🔊 Громкость: ${volValue}%`;
+                    
+                    clearTimeout(statusTimeout);
+                    statusTimeout = setTimeout(() => {
+                        if (statusDiv) {
+                            statusDiv.innerHTML = soundToggle && !soundToggle.checked ? '🔇 Звук полностью отключен' : '🎵 Звуки активны!';
                         }
-                    }, 1500);
+                    }, 1200);
                 });
             }
             
@@ -861,18 +754,10 @@
                     const soundName = this.dataset.sound;
                     if (soundName) {
                         SoundSystem.play(soundName);
-                        this.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            this.style.transform = '';
-                        }, 150);
                     }
                 });
             });
         });
-        
-        window.SoundSystem = SoundSystem;
-        window.toggleMenu = toggleMenu;
-        window.goBack = goBack;
     </script>
 </body>
 </html>

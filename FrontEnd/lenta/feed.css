@@ -324,3 +324,74 @@
     .stat-view { padding: 4px 10px; font-size: 12px; }
     .post-action-btn { padding: 4px 10px; font-size: 12px; }
 }
+
+/* Стили для файлов в постах ленты */
+.post-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.post-file-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+
+.post-file-video {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.post-file-other {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid #61DE2A;
+    border-radius: 8px;
+    color: #61DE2A;
+    font-size: 13px;
+}
+
+.post-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.post-file-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+
+.post-file-video {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.post-file-other {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid #61DE2A;
+    border-radius: 8px;
+    color: #61DE2A;
+    font-size: 13px;
+}

@@ -6,9 +6,198 @@
     <title>ЕПТА - Лента</title>
     <link rel="stylesheet" href="../you/style.css">
     <link rel="stylesheet" href="feed.css">
+    <style>
+        .feed-post-creator {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #61DE2A;
+        }
+        
+        .feed-post-creator-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .feed-post-creator-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(34, 34, 34, 0.95);
+            border: 2px solid #61DE2A;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .feed-post-creator-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .feed-post-creator-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 14px 18px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 70px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .feed-post-creator-input:focus {
+            border-color: #61DE2A;
+            box-shadow: 0 0 20px rgba(97, 222, 42, 0.3);
+        }
+        
+        .feed-post-creator-input::placeholder {
+            color: #444;
+        }
+        
+        .feed-post-creator-actions {
+            margin-left: 60px;
+        }
+        
+        .feed-creator-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .feed-creator-file {
+            background: rgba(97, 222, 42, 0.1);
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #61DE2A;
+        }
+        
+        .feed-creator-file-remove {
+            cursor: pointer;
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        .feed-creator-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .feed-creator-btn {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            border-radius: 20px;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .feed-creator-btn:hover {
+            background: rgba(97, 222, 42, 0.15);
+            border-color: #61DE2A;
+            color: #61DE2A;
+        }
+        
+        .feed-submit-btn {
+            padding: 8px 20px;
+            background: rgba(97, 222, 42, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid #61DE2A;
+            border-radius: 20px;
+            color: #61DE2A;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .feed-submit-btn:hover {
+            background: rgba(97, 222, 42, 0.2);
+            box-shadow: 0 0 15px rgba(97, 222, 42, 0.3);
+        }
+        
+        .post-cooldown {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            background: rgba(97, 222, 42, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            color: #61DE2A;
+            font-size: 13px;
+        }
+        
+        .post-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .post-file-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        
+        .post-file-video {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .post-file-other {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(97, 222, 42, 0.1);
+            border: 1px solid #61DE2A;
+            border-radius: 8px;
+            color: #61DE2A;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .feed-post-creator-actions {
+                margin-left: 50px;
+            }
+            .feed-creator-btn, .feed-submit-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Фоновое видео -->
     <video autoplay loop muted playsinline class="background-video">
         <source src="../oboi/video.mp4" type="video/mp4">
     </video>
@@ -30,10 +219,10 @@
                 <a href="../you/index.html" class="menu-item">
                     <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
                 </a>
-                <a href="#" class="menu-item">
+                <a href="../you/settings.html" class="menu-item">
                     <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
                 </a>
-                <a href="#" class="menu-item">
+                <a href="../sms/sms.html" class="menu-item">
                     <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
                 </a>
             </div>
@@ -52,6 +241,31 @@
     <div class="feed-container">
         <div class="feed-grid">
             <div class="feed-main">
+                <div class="feed-post-creator">
+                    <div class="feed-post-creator-header">
+                        <div class="feed-post-creator-avatar">
+                            <img src="../png/portrait.png" alt="">
+                        </div>
+                        <textarea class="feed-post-creator-input" id="feedPostInput" placeholder="Что нового? Поделись мыслями..."></textarea>
+                    </div>
+                    <div class="feed-post-creator-actions">
+                        <div class="feed-creator-files" id="feedFileList"></div>
+                        <div class="feed-creator-buttons">
+                            <input type="file" id="feedFileInput" style="display:none" multiple accept="image/*,video/*">
+                            <button class="feed-creator-btn glass-btn" onclick="openFeedFileSelector()">
+                                <img src="../png/camera.png" class="icon-18" alt=""> Прикрепить
+                            </button>
+                            <div class="post-cooldown" id="postCooldownDisplay">
+                                <img src="../png/hourglass.png" class="icon-16" alt="" style="filter: invert(72%) sepia(79%) saturate(500%) hue-rotate(45deg);">
+                                <span>0 сек</span>
+                            </div>
+                            <button class="feed-submit-btn glass-btn" onclick="submitFeedPost()">
+                                <img src="../png/paper-plane.png" class="icon-18" alt=""> Опубликовать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="feed-tabs">
                     <button class="feed-tab active" onclick="switchFeedTab(this, 'recommendations')">Рекомендации</button>
                     <button class="feed-tab" onclick="switchFeedTab(this, 'popular')">Популярное</button>
