@@ -122,7 +122,7 @@
     min-width: 0;
 }
 
-.chat-name {
+.chat-info .chat-name {
     font-weight: 700;
     font-size: 15px;
     color: #e0e0e0;
@@ -208,7 +208,7 @@
     flex: 1;
 }
 
-.chat-name {
+.chat-details .chat-name {
     font-weight: 800;
     font-size: 18px;
     color: #e0e0e0;
@@ -358,7 +358,7 @@
     height: 20px;
 }
 
-/* ========== МИКРО-ПРОФИЛЬ (OVERHEAD) С 3D ЭФФЕКТОМ ========== */
+/* ========== МИКРО-ПРОФИЛЬ (OVERHEAD) ========== */
 .profile-overlay {
     position: fixed;
     top: 0;
@@ -381,30 +381,25 @@
     visibility: visible;
 }
 
-/* Контейнер для 3D карточек */
+/* Контейнер для 3D карточки */
 .cards-container {
     perspective: 1200px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: grab;
+    position: relative;
 }
 
-/* Стопка карточек */
-.cards-stack {
+.cards-container:active {
+    cursor: grabbing;
+}
+
+/* ОДНА карточка с 3D эффектом */
+.profile-card-3d {
     position: relative;
     width: 380px;
-    height: 500px;
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
-    cursor: pointer;
-}
-
-/* Общая карточка */
-.profile-card-3d {
-    position: absolute;
-    width: 100%;
-    height: 100%;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
     backdrop-filter: blur(20px);
     border: 2px solid #61DE2A;
@@ -412,28 +407,67 @@
     padding: 25px;
     text-align: center;
     box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s ease;
     transform-style: preserve-3d;
-    backface-visibility: visible;
+    transition: box-shadow 0.2s ease, transform 0.05s linear;
+    will-change: transform;
 }
 
-/* 6 карточек с разными отступами для 3D эффекта */
-.card-1 { transform: translateZ(-25px) translateX(-8px) translateY(-6px) rotateZ(-1deg); background: rgba(0, 0, 0, 0.85); border-color: #3BA51A; }
-.card-2 { transform: translateZ(-18px) translateX(-5px) translateY(-4px) rotateZ(-0.5deg); background: rgba(0, 0, 0, 0.88); border-color: #4DC41E; }
-.card-3 { transform: translateZ(-10px) translateX(-2px) translateY(-2px); background: rgba(0, 0, 0, 0.92); border-color: #61DE2A; }
-.card-4 { transform: translateZ(0px); background: rgba(0, 0, 0, 0.96); border-color: #8FDF4A; box-shadow: 0 0 30px rgba(97, 222, 42, 0.2); }
-.card-5 { transform: translateZ(-10px) translateX(2px) translateY(-2px); background: rgba(0, 0, 0, 0.92); border-color: #61DE2A; }
-.card-6 { transform: translateZ(-18px) translateX(5px) translateY(-4px) rotateZ(0.5deg); background: rgba(0, 0, 0, 0.88); border-color: #4DC41E; }
-.card-7 { transform: translateZ(-25px) translateX(8px) translateY(-6px) rotateZ(1deg); background: rgba(0, 0, 0, 0.85); border-color: #3BA51A; }
+/* Анимация IN - появление */
+.profile-card-3d.animate-in {
+    animation: cardIn 0.6s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+
+/* Анимация OUT - исчезновение */
+.profile-card-3d.animate-out {
+    animation: cardOut 0.4s cubic-bezier(0.55, 0, 0.75, 0.1) forwards;
+}
+
+@keyframes cardIn {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotateX(-180deg);
+    }
+    30% {
+        opacity: 0.5;
+        transform: scale(0.6) rotateX(-60deg);
+    }
+    60% {
+        opacity: 0.8;
+        transform: scale(1.1) rotateX(10deg);
+    }
+    80% {
+        transform: scale(0.98) rotateX(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateX(0deg);
+    }
+}
+
+@keyframes cardOut {
+    0% {
+        opacity: 1;
+        transform: scale(1) rotateX(0deg);
+    }
+    40% {
+        opacity: 0.6;
+        transform: scale(0.7) rotateX(60deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0) rotateX(180deg);
+        visibility: hidden;
+    }
+}
 
 /* Фоновое изображение с эффектом параллакса */
 .card-bg {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 24px;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    border-radius: 28px;
     overflow: hidden;
     z-index: 0;
 }
@@ -442,17 +476,14 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.15;
-    transition: transform 0.1s ease-out;
+    opacity: 0.2;
+    will-change: transform;
 }
 
 /* Контент карточки (поверх фона) */
 .card-content {
     position: relative;
     z-index: 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 /* Блик на карточке */
@@ -463,15 +494,30 @@
     width: 100%;
     height: 100%;
     border-radius: 24px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.05) 100%);
     pointer-events: none;
     z-index: 3;
-    opacity: 0.5;
+    opacity: 0.3;
     transition: opacity 0.3s ease;
 }
 
 .profile-card-3d:hover .card-gloss {
-    opacity: 0.8;
+    opacity: 0.5;
+}
+
+/* Тень под карточкой */
+.cards-shadow {
+    position: absolute;
+    bottom: -40px;
+    left: 10%;
+    width: 80%;
+    height: 40px;
+    background: radial-gradient(ellipse, rgba(97, 222, 42, 0.4), transparent 70%);
+    border-radius: 50%;
+    filter: blur(12px);
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition: transform 0.05s linear, opacity 0.1s ease;
 }
 
 .profile-card-avatar {
@@ -557,7 +603,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: auto;
+    margin-top: 10px;
 }
 
 .profile-card-btn:hover {
@@ -590,99 +636,27 @@
     transform: rotate(90deg);
 }
 
-/* Тень под карточками */
-.cards-shadow {
-    position: absolute;
-    bottom: -30px;
-    left: 10%;
-    width: 80%;
-    height: 30px;
-    background: radial-gradient(ellipse, rgba(97, 222, 42, 0.3), transparent);
-    border-radius: 50%;
-    filter: blur(10px);
-    transition: all 0.1s ease-out;
-    pointer-events: none;
-}
-
-/* Адаптив для мобильных */
-@media (max-width: 768px) {
-    .cards-stack {
-        width: 320px;
-        height: 480px;
-    }
-    
-    .profile-card-avatar {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .profile-card-name {
-        font-size: 18px;
-    }
-    
-    .profile-card-username {
-        font-size: 12px;
-    }
-    
-    .profile-card-detail {
-        font-size: 12px;
-        padding: 6px 0;
-    }
-    
-    .profile-card-btn {
-        padding: 8px;
-        font-size: 13px;
-    }
-}
-
-@media (max-width: 480px) {
-    .cards-stack {
-        width: 280px;
-        height: 450px;
-    }
-    
-    .profile-card-avatar {
-        width: 70px;
-        height: 70px;
-        margin-bottom: 10px;
-    }
-    
-    .profile-card-name {
-        font-size: 16px;
-    }
-    
-    .profile-card-details {
-        padding: 8px;
-        margin-bottom: 12px;
-    }
-}
-
 /* ========== АДАПТИВ ========== */
-/* Планшеты (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
     .sms-grid {
         grid-template-columns: 280px 1fr;
         height: calc(100vh - 100px);
     }
-    
     .message {
         max-width: 80%;
     }
 }
 
-/* Мобильные телефоны (до 768px) */
 @media (max-width: 768px) {
     .sms-container {
         padding: 0 10px;
         margin: 10px auto;
     }
-    
     .sms-grid {
         grid-template-columns: 1fr;
         height: calc(100vh - 80px);
         border-radius: 12px;
     }
-    
     .chats-list {
         position: fixed;
         top: 0;
@@ -695,77 +669,109 @@
         border-right: 2px solid #61DE2A;
         border-radius: 0;
     }
-    
     .chats-list.mobile-show {
         left: 0;
     }
-    
     .chat-area {
         width: 100%;
     }
-    
     .chat-header {
         padding: 12px 16px;
     }
-    
     .chat-header-info .chat-name {
         font-size: 16px;
     }
-    
     .chat-avatar {
         width: 40px;
         height: 40px;
     }
-    
     .chat-messages {
         padding: 12px;
     }
-    
     .message {
         max-width: 85%;
     }
-    
     .message-bubble {
         padding: 8px 12px;
         font-size: 13px;
     }
-    
     .chat-input-wrapper {
         padding: 12px;
     }
-    
     .send-btn {
         width: 40px;
         height: 40px;
     }
+    .cards-container {
+        cursor: default;
+    }
+    .profile-card-3d {
+        width: 320px;
+        padding: 20px;
+        transition: transform 0.2s ease;
+    }
+    .profile-card-3d:active {
+        transform: scale(0.98);
+    }
+    .cards-shadow {
+        display: none;
+    }
+    .profile-card-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    .profile-card-name {
+        font-size: 18px;
+    }
+    .profile-card-username {
+        font-size: 12px;
+    }
+    .profile-card-detail {
+        font-size: 12px;
+        padding: 6px 0;
+    }
+    .profile-card-btn {
+        padding: 8px;
+        font-size: 13px;
+    }
 }
 
-/* Маленькие телефоны (до 480px) */
 @media (max-width: 480px) {
     .chats-header {
         padding: 12px 16px;
         font-size: 16px;
     }
-    
     .chat-item {
         padding: 10px;
     }
-    
     .chat-avatar-small {
         width: 40px;
         height: 40px;
     }
-    
-    .chat-name {
+    .chat-info .chat-name {
         font-size: 14px;
     }
-    
     .message {
         max-width: 90%;
     }
+    .profile-card-3d {
+        width: 280px;
+        padding: 15px;
+    }
+    .profile-card-avatar {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
+    }
+    .profile-card-name {
+        font-size: 16px;
+    }
+    .profile-card-details {
+        padding: 8px;
+        margin-bottom: 12px;
+    }
 }
 
-/* Кнопка назад на мобилке */
 .back-to-chats {
     display: none;
     background: rgba(97, 222, 42, 0.1);
@@ -786,7 +792,6 @@
     }
 }
 
-/* Скроллбар для списка чатов */
 .chats-scroll::-webkit-scrollbar {
     width: 6px;
 }

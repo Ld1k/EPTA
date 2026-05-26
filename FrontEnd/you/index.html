@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ЕПТА - Профиль</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили для модальных окон и анимаций */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 420px;
+            width: 90%;
+            border: 2px solid #61DE2A;
+            box-shadow: 0 8px 32px 0 rgba(97, 222, 42, 0.2);
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #61DE2A;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #333333;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            outline: none;
+            font-family: inherit;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+        }
+        .modal-input:focus {
+            border-color: #61DE2A;
+            box-shadow: 0 0 20px rgba(97, 222, 42, 0.3);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .comment-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .comment-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(34, 34, 34, 0.95);
+            border: 1px solid #61DE2A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .comment-author {
+            font-weight: 600;
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+        .comment-date {
+            font-size: 11px;
+            color: #666;
+        }
+        .comment-text {
+            font-size: 14px;
+            color: #ccc;
+            margin-left: 32px;
+        }
+        .comment-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        .comment-input-wrapper .modal-input {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        .post-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .post-file-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        .post-file-video {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .post-file-other {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(97, 222, 42, 0.1);
+            border: 1px solid #61DE2A;
+            border-radius: 8px;
+            color: #61DE2A;
+            font-size: 13px;
+        }
+        .file-item {
+            background: rgba(97, 222, 42, 0.1);
+            padding: 4px 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .file-item .remove-file {
+            cursor: pointer;
+            color: #ff4444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновое видео -->
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="../oboi/video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="falling-numbers" id="fallingNumbers"></div>
+
+    <!-- Бургер-меню -->
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-panel" id="menuPanel">
+            <div class="menu-content">
+                <a href="../lenta/feed.html" class="menu-item">
+                    <img src="../png/grid.png" class="menu-icon" alt=""> Лента
+                </a>
+                <a href="#" class="menu-item">
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
+                </a>
+                <a href="settings.html" class="menu-item">
+                    <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
+                </a>
+                <a href="../sms/sms.html" class="menu-item">
+                    <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="../lenta/feed.html" class="logo">ЕПТА</a>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Поиск...">
+            </div>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-main">
+                <div class="avatar-section">
+                    <div class="avatar-wrapper" id="avatarWrapper">
+                        <div class="avatar-placeholder">
+                            <img src="../png/portrait.png" class="avatar-img" alt="">
+                        </div>
+                        <div class="status-selector-wrapper">
+                            <div class="status-selector" id="statusSelector">
+                                <div class="status-dot" id="statusDot" onclick="toggleStatusDropdown(event)"></div>
+                                <div class="status-dropdown" id="statusDropdown">
+                                    <div class="status-option" onclick="changeStatus('online')">
+                                        <span class="status-circle online"></span>
+                                        <span>Онлайн</span>
+                                    </div>
+                                    <div class="status-option" onclick="changeStatus('inactive')">
+                                        <span class="status-circle inactive"></span>
+                                        <span>Неактивен</span>
+                                    </div>
+                                    <div class="status-option" onclick="changeStatus('dnd')">
+                                        <span class="status-circle dnd"></span>
+                                        <span>Не беспокоить</span>
+                                    </div>
+                                    <div class="status-option" onclick="changeStatus('offline')">
+                                        <span class="status-circle offline"></span>
+                                        <span>Не в сети</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">
+                        <span id="profileName">@username</span>
+                    </div>
+                    <div class="profile-status" id="profileStatus" onclick="editStatus()">
+                        Добавить статус
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Город:</span>
+                            <span class="detail-value">---</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Возраст:</span>
+                            <span class="detail-value">---</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Пол:</span>
+                            <span class="detail-value">---</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Сквад:</span>
+                            <span class="detail-value">---</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary glass-btn" id="addFriendBtn" onclick="toggleFriend()">
+                            <img src="../png/users-alt.png" class="icon-18" alt=""> Добавить в друзья
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="main-content">
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="switchTab(this, 'wall')">Стена</button>
+                    <button class="tab-btn" onclick="switchTab(this, 'photos')">
+                        <img src="../png/camera.png" class="icon-16" alt=""> Фотки
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(this, 'videos')">
+                        <img src="../png/play-alt.png" class="icon-16" alt=""> Видео
+                    </button>
+                </div>
+                
+                <div class="filters-bar" id="filtersBar">
+                    <span class="filter-label">Сортировка:</span>
+                    <button class="filter-btn active" onclick="setFilter('date', this)">По дате</button>
+                    <button class="filter-btn" onclick="setFilter('views', this)">По просмотрам</button>
+                    <button class="filter-btn" onclick="setFilter('reposts', this)">По репостам</button>
+                    <button class="filter-btn" onclick="setFilter('likes', this)">По лайкам</button>
+                    <button class="filter-btn" onclick="setFilter('comments', this)">По комментариям</button>
+                </div>
+
+                <div class="wall" id="wallContent">
+                    <!-- Контент стены генерируется через JS -->
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">Инфа</div>
+                    <div class="info-row">
+                        <span class="info-label">Город</span>
+                        <span class="info-value">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Возраст</span>
+                        <span class="info-value">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Пол</span>
+                        <span class="info-value">---</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Сквад</span>
+                        <span class="info-value">---</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Модальное окно статуса -->
+    <div class="modal-overlay" id="statusModal">
+        <div class="modal">
+            <div class="modal-title">Изменить статус</div>
+            <input type="text" class="modal-input" id="statusInput" placeholder="Введи статус">
+            <div class="modal-actions">
+                <button class="btn btn-secondary glass-btn" onclick="closeStatusModal()">
+                    <img src="../png/cross.png" class="icon-16" alt=""> Отмена
+                </button>
+                <button class="btn btn-primary glass-btn" onclick="saveStatus()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно комментариев -->
+    <div class="modal-overlay" id="commentsModal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-title">
+                <img src="../png/comment.png" class="icon-20" alt=""> Комментарии
+            </div>
+            <div class="comments-list" id="commentsList"></div>
+            <div class="comment-input-wrapper">
+                <input type="text" class="modal-input" id="commentInput" placeholder="Написать комментарий...">
+                <button class="btn btn-primary glass-btn" onclick="addCommentToPost()">
+                    <img src="../png/paper-plane.png" class="icon-16" alt=""> Отправить
+                </button>
+            </div>
+            <div class="modal-actions" style="margin-top: 10px;">
+                <button class="btn btn-secondary glass-btn" onclick="closeCommentsModal()">
+                    <img src="../png/cross.png" class="icon-16" alt=""> Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="comments.js"></script>
+    <script src="reposts.js"></script>
+    <script src="likes.js"></script>
+    <script src="sounds.js"></script>
+    <script>
+        // ==================== ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ====================
+        let userData = {
+            username: '@username',
+            status: 'Добавить статус',
+            currentStatus: 'online'
+        };
+
+        // Текущий фильтр и вкладка
+        let currentFilter = 'date';
+        let currentTab = 'wall';
+
+        // Массив постов на стене
+        let posts = JSON.parse(localStorage.getItem('epta_wall_posts') || '[]');
+        posts = posts.map(p => ({...p, date: new Date(p.date), files: p.files || [], views: p.views || 0, viewedBy: p.viewedBy || []}));
+
+        // Публичные посты для ленты
+        let publicPosts = JSON.parse(localStorage.getItem('epta_public_posts') || '[]');
+        publicPosts = publicPosts.map(p => ({...p, date: new Date(p.date), files: p.files || [], views: p.views || 0, viewedBy: p.viewedBy || []}));
+
+        // Файлы для загрузки
+        let pendingFiles = [];
+        let currentPostId = null;
+
+        // ID текущего пользователя (уникальный для сессии)
+        const currentUserId = localStorage.getItem('epta_user_id') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('epta_user_id', currentUserId);
+
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDateTime(date) {
+            const d = new Date(date);
+            const now = new Date();
+            const days = Math.floor((now - d) / 86400000);
+            const time = d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+            const dm = d.toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
+            if (days === 0) return `сегодня в ${time}`;
+            if (days === 1) return `вчера в ${time}`;
+            return `${dm} в ${time}`;
+        }
+
+        // ==================== СОХРАНЕНИЕ ДАННЫХ ====================
+        function saveWallPosts() {
+            const clean = posts.map(p => ({
+                id: p.id, text: p.text, date: p.date, views: p.views, viewedBy: p.viewedBy,
+                isPublic: p.isPublic, author: p.author, avatar: p.avatar,
+                files: []
+            }));
+            localStorage.setItem('epta_wall_posts', JSON.stringify(clean));
+        }
+
+        function savePublicPosts() {
+            const clean = publicPosts.map(p => ({
+                id: p.id, text: p.text, date: p.date, views: p.views, viewedBy: p.viewedBy,
+                isPublic: p.isPublic, author: p.author, avatar: p.avatar,
+                files: []
+            }));
+            localStorage.setItem('epta_public_posts', JSON.stringify(clean));
+        }
+
+        // ==================== ПАДАЮЩИЕ ЧИСЛА ====================
+        function createFallingNumbers() {
+            const container = document.getElementById('fallingNumbers');
+            if (!container) return;
+            
+            function spawnNumber() {
+                const number = document.createElement('div');
+                number.className = 'falling-number';
+                number.textContent = '42';
+                
+                const size = Math.random() * 14 + 10;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 12 + 8;
+                const delay = Math.random() * 5;
+                
+                number.style.cssText = `
+                    left: ${left}%;
+                    font-size: ${size}px;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                `;
+                
+                container.appendChild(number);
+                
+                setTimeout(() => {
+                    if (number.parentNode) number.remove();
+                }, (duration + delay) * 1000 + 500);
+            }
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => spawnNumber(), i * 150);
+            }
+            
+            setInterval(() => {
+                if (container.children.length < 45) {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => spawnNumber(), i * 100);
+                    }
+                }
+            }, 600);
+        }
+
+        // ==================== МЕНЮ ====================
+        function toggleMenu() {
+            document.getElementById('menuPanel').classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('burgerMenu');
+            const panel = document.getElementById('menuPanel');
+            if (menu && panel && !menu.contains(e.target) && panel.classList.contains('active')) {
+                panel.classList.remove('active');
+            }
+        });
+
+        // ==================== СТАТУСЫ ====================
+        function toggleStatusDropdown(event) {
+            event.stopPropagation();
+            document.getElementById('statusDropdown').classList.toggle('show');
+        }
+
+        function changeStatus(status) {
+            const wrapper = document.getElementById('avatarWrapper');
+            wrapper.classList.remove('status-online', 'status-inactive', 'status-dnd', 'status-offline');
+            switch(status) {
+                case 'online': wrapper.classList.add('status-online'); break;
+                case 'inactive': wrapper.classList.add('status-inactive'); break;
+                case 'dnd': wrapper.classList.add('status-dnd'); break;
+                case 'offline': wrapper.classList.add('status-offline'); break;
+            }
+            userData.currentStatus = status;
+            document.getElementById('statusDropdown').classList.remove('show');
+        }
+
+        function editStatus() {
+            document.getElementById('statusInput').value = userData.status === 'Добавить статус' ? '' : userData.status;
+            document.getElementById('statusModal').classList.add('active');
+            document.getElementById('statusInput').focus();
+        }
+
+        function closeStatusModal() { 
+            document.getElementById('statusModal').classList.remove('active'); 
+        }
+
+        function saveStatus() {
+            const s = document.getElementById('statusInput').value.trim();
+            if (s) { 
+                userData.status = s; 
+                document.getElementById('profileStatus').textContent = s; 
+            }
+            closeStatusModal();
+        }
+
+        // ==================== ДРУЗЬЯ ====================
+        let isFriend = false;
+        function toggleFriend() {
+            const btn = document.getElementById('addFriendBtn');
+            if (!isFriend) {
+                btn.innerHTML = '<img src="../png/users-alt.png" class="icon-18" alt=""> ✓ Друзья';
+            } else {
+                btn.innerHTML = '<img src="../png/users-alt.png" class="icon-18" alt=""> Добавить в друзья';
+            }
+            isFriend = !isFriend;
+        }
+
+        // ==================== ФАЙЛЫ ====================
+        function handleFiles(files) {
+            const MAX = 10 * 1024 * 1024;
+            for (let f of files) {
+                if (f.size > MAX) { 
+                    alert('Файл слишком большой! Максимум 10MB');
+                    return; 
+                }
+                if (!pendingFiles.find(x => x.name === f.name && x.size === f.size)) pendingFiles.push(f);
+            }
+            updateFileList();
+            document.getElementById('fileInput').value = '';
+        }
+
+        function updateFileList() {
+            const el = document.getElementById('fileList');
+            if (!el) return;
+            el.innerHTML = pendingFiles.map((f, i) => `<div class="file-item">${f.name} (${(f.size/1024/1024).toFixed(2)} MB) <span class="remove-file" onclick="removeFile(${i})">✕</span></div>`).join('');
+        }
+
+        function removeFile(i) { 
+            pendingFiles.splice(i, 1); 
+            updateFileList(); 
+        }
+
+        function renderPostFiles(files) {
+            if (!files || !files.length) return '';
+            let html = '<div class="post-files">';
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                if (f instanceof File || f instanceof Blob) {
+                    const url = URL.createObjectURL(f);
+                    if (f.type.startsWith('image/')) {
+                        html += `<img src="${url}" class="post-file-image" onclick="window.open(this.src)">`;
+                    } else if (f.type.startsWith('video/')) {
+                        html += `<video src="${url}" class="post-file-video" controls></video>`;
+                    } else {
+                        html += `<div class="post-file-other">📎 ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)</div>`;
+                    }
+                }
+            }
+            html += '</div>';
+            return html;
+        }
+
+        // ==================== ПРОСМОТРЫ ====================
+        function incrementViews(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post && !post.viewedBy?.includes(currentUserId)) {
+                if (!post.viewedBy) post.viewedBy = [];
+                post.viewedBy.push(currentUserId);
+                post.views = post.viewedBy.length;
+                saveWallPosts();
+                return true;
+            }
+            return false;
+        }
+
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            return rect.top < window.innerHeight - 100 && rect.bottom > 0;
+        }
+
+        // ==================== СОРТИРОВКА ====================
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPosts();
+        }
+
+        function sortPosts(arr) {
+            switch(currentFilter) {
+                case 'date': return [...arr].sort((a, b) => b.date - a.date);
+                case 'views': return [...arr].sort((a, b) => (b.views||0) - (a.views||0));
+                case 'reposts': return [...arr].sort((a, b) => (window.Reposts?.getRepostCount(b.id) || 0) - (window.Reposts?.getRepostCount(a.id) || 0));
+                case 'likes': return [...arr].sort((a, b) => (window.Likes?.getLikeCount(b.id) || 0) - (window.Likes?.getLikeCount(a.id) || 0));
+                case 'comments': return [...arr].sort((a, b) => (window.Comments?.getCommentCount(b.id) || 0) - (window.Comments?.getCommentCount(a.id) || 0));
+                default: return [...arr];
+            }
+        }
+
+        // ==================== ОТОБРАЖЕНИЕ ПОСТОВ ====================
+        function renderPosts() {
+            const container = document.getElementById('postsContainer');
+            if (!container) return;
+            const sorted = sortPosts(posts);
+            if (!sorted.length) {
+                container.innerHTML = '<p style="text-align:center;padding:60px;color:#888;">Нет постов. Напиши первый!</p>';
+                return;
+            }
+            container.innerHTML = sorted.map(post => {
+                const isLiked = window.Likes?.hasLiked(post.id, currentUserId) || false;
+                const viewsCount = formatNumber(post.views || 0);
+                const repostCount = formatNumber(window.Reposts?.getRepostCount(post.id) || 0);
+                const likeCount = formatNumber(window.Likes?.getLikeCount(post.id) || 0);
+                const commentCount = formatNumber(window.Comments?.getCommentCount(post.id) || 0);
+                
+                return `
+                <div class="post" data-post-id="${post.id}">
+                    <div class="post-header">
+                        <div class="post-avatar-placeholder" style="width:36px;height:36px;">
+                            <img src="../png/portrait.png" class="avatar-img-small" alt="">
+                        </div>
+                        <div class="post-header-info">
+                            <span class="post-author">${escapeHtml(post.author || userData.username)}</span>
+                            <span class="post-date">${formatDateTime(post.date)}${post.isPublic ? ' (Публичный)' : ''}</span>
+                        </div>
+                    </div>
+                    ${post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : ''}
+                    ${renderPostFiles(post.files || [])}
+                    
+                    <div class="post-actions">
+                        <div class="stat-view">
+                            <img src="../png/eye.png" class="icon-16" alt=""> ${viewsCount}
+                        </div>
+                        <button class="post-action-btn" onclick="repostPost(${post.id})">
+                            <img src="../png/refresh.png" class="icon-16" alt=""> ${repostCount}
+                        </button>
+                        <button class="post-action-btn ${isLiked ? 'liked' : ''}" onclick="likePost(${post.id}, this)" style="${isLiked ? 'color:#61DE2A;' : ''}">
+                            <img src="../png/${isLiked ? 'heart_on' : 'heart_off'}.png" class="icon-16" alt=""> ${likeCount}
+                        </button>
+                        <button class="post-action-btn" onclick="openComments(${post.id})">
+                            <img src="../png/comment.png" class="icon-16" alt=""> ${commentCount}
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+            
+            // Увеличиваем просмотры для постов в зоне видимости
+            setTimeout(() => {
+                sorted.forEach(post => {
+                    const postElement = document.querySelector(`.post[data-post-id="${post.id}"]`);
+                    if (postElement && isElementInViewport(postElement)) {
+                        const viewed = incrementViews(post.id);
+                        if (viewed) {
+                            const viewsElement = postElement.querySelector('.stat-view');
+                            if (viewsElement) {
+                                const newViews = formatNumber(post.views);
+                                viewsElement.innerHTML = `<img src="../png/eye.png" class="icon-16" alt=""> ${newViews}`;
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        // Отслеживание просмотров при скролле
+        let viewTimeout;
+        let processedPosts = new Set();
+
+        window.addEventListener('scroll', function() {
+            if (viewTimeout) clearTimeout(viewTimeout);
+            viewTimeout = setTimeout(() => {
+                document.querySelectorAll('.post').forEach(postEl => {
+                    const postId = parseInt(postEl.dataset.postId);
+                    if (postId && !processedPosts.has(postId) && isElementInViewport(postEl)) {
+                        processedPosts.add(postId);
+                        const viewed = incrementViews(postId);
+                        if (viewed) {
+                            const viewsElement = postEl.querySelector('.stat-view');
+                            if (viewsElement) {
+                                const post = posts.find(p => p.id === postId);
+                                const newViews = formatNumber(post?.views || 0);
+                                viewsElement.innerHTML = `<img src="../png/eye.png" class="icon-16" alt=""> ${newViews}`;
+                            }
+                        }
+                    }
+                });
+            }, 300);
+        });
+
+        // ==================== ДОБАВЛЕНИЕ ПОСТА ====================
+        function addPost() {
+            const input = document.getElementById('postInput');
+            if (!input) return;
+            const text = input.value.trim();
+            const isPublic = document.getElementById('publicCheckbox')?.checked || false;
+            if (!text && !pendingFiles.length) {
+                alert('Напишите что-нибудь или добавьте файл');
+                return;
+            }
+            
+            const post = {
+                id: Date.now(),
+                text: text,
+                date: new Date(),
+                views: 0,
+                viewedBy: [],
+                isPublic: isPublic,
+                author: userData.username,
+                avatar: 'portrait.png',
+                files: [...pendingFiles]
+            };
+            
+            posts.unshift(post);
+            saveWallPosts();
+            if (isPublic) { 
+                publicPosts.unshift({...post, files: []}); 
+                savePublicPosts(); 
+            }
+            pendingFiles = [];
+            updateFileList();
+            
+            renderPosts();
+            
+            input.value = '';
+            const cb = document.getElementById('publicCheckbox');
+            if (cb) cb.checked = false;
+            
+            // Звук при добавлении поста
+            if (window.Sounds) window.Sounds.play('clickPositive');
+        }
+
+        // ==================== ЛАЙКИ ====================
+        function likePost(postId, btnElement) {
+            const btn = btnElement || event?.target?.closest('.post-action-btn');
+            if (!btn) return;
+            
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked');
+                btn.style.color = '';
+                window.Likes?.removeLike(postId, currentUserId);
+                const img = btn.querySelector('img');
+                if (img) img.src = '../png/heart_off.png';
+                if (window.Sounds) window.Sounds.play('clickNegative');
+            } else {
+                btn.classList.add('liked');
+                btn.style.color = '#61DE2A';
+                window.Likes?.addLike(postId, currentUserId);
+                const img = btn.querySelector('img');
+                if (img) img.src = '../png/heart_on.png';
+                if (window.Sounds) window.Sounds.play('clickPositive');
+            }
+            
+            const newCount = formatNumber(window.Likes?.getLikeCount(postId) || 0);
+            btn.innerHTML = `<img src="../png/${btn.classList.contains('liked') ? 'heart_on' : 'heart_off'}.png" class="icon-16" alt=""> ${newCount}`;
+            
+            if (currentFilter === 'likes') {
+                renderPosts();
+            }
+        }
+
+        // ==================== КОММЕНТАРИИ ====================
+        function openComments(postId) {
+            currentPostId = postId;
+            document.getElementById('commentsModal').classList.add('active');
+            renderComments(postId);
+            if (window.Sounds) window.Sounds.play('clickPositive');
+        }
+
+        function closeCommentsModal() {
+            document.getElementById('commentsModal').classList.remove('active');
+        }
+
+        function addCommentToPost() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (text && currentPostId) {
+                window.Comments?.addComment(currentPostId, text, userData.username);
+                input.value = '';
+                renderComments(currentPostId);
+                renderPosts();
+                if (window.Sounds) window.Sounds.play('dingOn');
+            }
+        }
+
+        function renderComments(postId) {
+            const list = document.getElementById('commentsList');
+            const comments = window.Comments?.getComments(postId) || [];
+            list.innerHTML = comments.length ? comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <div class="comment-avatar"><img src="../png/portrait.png" class="avatar-img-small" alt=""></div>
+                        <span class="comment-author">${escapeHtml(c.author)}</span>
+                        <span class="comment-date">${formatDateTime(new Date(c.date))}</span>
+                    </div>
+                    <div class="comment-text">${escapeHtml(c.text)}</div>
+                </div>
+            `).join('') : '<p style="color:#666;text-align:center;padding:20px;">💬 Нет комментариев</p>';
+        }
+
+        // ==================== РЕПОСТЫ ====================
+        function repostPost(postId) {
+            if (window.Reposts?.hasReposted(postId, currentUserId)) {
+                window.Reposts?.removeRepost(postId, currentUserId);
+                if (window.Sounds) window.Sounds.play('clickNegative');
+            } else {
+                window.Reposts?.addRepost(postId, currentUserId);
+                if (window.Sounds) window.Sounds.play('clickPositive');
+            }
+            renderPosts();
+        }
+
+        // ==================== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ====================
+        function switchTab(btn, tabName) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = tabName;
+            const wall = document.getElementById('wallContent');
+            const fb = document.getElementById('filtersBar');
+            if (tabName === 'wall') {
+                fb.style.display = 'flex';
+                wall.innerHTML = `
+                    <div class="post-editor">
+                        <div class="post-avatar-placeholder">
+                            <img src="../png/portrait.png" class="avatar-img-small" alt="">
+                        </div>
+                        <div class="post-input-wrapper">
+                            <textarea class="post-input" placeholder="Что нового?" id="postInput"></textarea>
+                            <div class="post-actions-bar">
+                                <input type="file" id="fileInput" style="display:none" multiple onchange="handleFiles(this.files)">
+                                <button class="post-action-icon glass-btn" onclick="document.getElementById('fileInput').click()">
+                                    <img src="../png/camera.png" class="icon-20" alt="">
+                                </button>
+                                <div class="file-list" id="fileList"></div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="publicCheckbox">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">Публичный</span>
+                                </label>
+                                <button class="post-submit glass-btn" onclick="addPost()">
+                                    <img src="../png/paper-plane.png" class="icon-18" alt="">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="postsContainer"></div>
+                `;
+                renderPosts();
+            } else {
+                fb.style.display = 'none';
+                wall.innerHTML = `<p style="text-align:center;padding:60px;color:#888;">${tabName === 'photos' ? '📷 Фотки будут тут' : '🎬 Видео будут тут'}</p>`;
+            }
+        }
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            changeStatus('online');
+            createFallingNumbers();
+            
+            // Ждем загрузки модулей
+            setTimeout(() => {
+                renderPosts();
+            }, 100);
+            
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('statusDropdown');
+                const dot = document.getElementById('statusDot');
+                if (dropdown && dot && !dot.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        });
+
+        document.getElementById('statusModal')?.addEventListener('click', function(e) { 
+            if (e.target === this) closeStatusModal(); 
+        });
+        document.getElementById('commentsModal')?.addEventListener('click', function(e) { 
+            if (e.target === this) closeCommentsModal(); 
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey && document.activeElement?.id === 'postInput') addPost();
+            if (e.key === 'Escape') {
+                closeStatusModal();
+                closeCommentsModal();
+            }
+        });
+
+        // Экспорт глобальных функций
+        window.toggleMenu = toggleMenu;
+        window.toggleStatusDropdown = toggleStatusDropdown;
+        window.changeStatus = changeStatus;
+        window.editStatus = editStatus;
+        window.closeStatusModal = closeStatusModal;
+        window.saveStatus = saveStatus;
+        window.toggleFriend = toggleFriend;
+        window.handleFiles = handleFiles;
+        window.removeFile = removeFile;
+        window.setFilter = setFilter;
+        window.addPost = addPost;
+        window.likePost = likePost;
+        window.openComments = openComments;
+        window.closeCommentsModal = closeCommentsModal;
+        window.addCommentToPost = addCommentToPost;
+        window.repostPost = repostPost;
+        window.switchTab = switchTab;
+    </script>
+</body>
+</html>

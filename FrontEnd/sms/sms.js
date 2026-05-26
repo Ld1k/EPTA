@@ -7,6 +7,11 @@ let currentChatId = null;
 const currentUserId = localStorage.getItem('epta_user_id') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 localStorage.setItem('epta_user_id', currentUserId);
 
+// Инициализация звуков если их нет
+if (typeof Sounds !== 'undefined' && Sounds.init) {
+    Sounds.init();
+}
+
 // Тестовые пользователи
 const testUsers = [
     { id: 'user1', name: '@alex', avatar: '../png/portrait.png', status: 'online' },
@@ -30,7 +35,6 @@ function loadData() {
     if (saved) {
         chats = JSON.parse(saved);
     } else {
-        // Тестовые чаты
         chats = [
             { id: 'chat1', type: 'personal', name: '@alex', avatar: '../png/portrait.png', participants: ['current', 'user1'], lastMessage: 'Привет! Как дела?', lastMessageTime: new Date(Date.now() - 3600000).toISOString(), unread: 2 },
             { id: 'chat2', type: 'personal', name: '@maria', avatar: '../png/portrait.png', participants: ['current', 'user2'], lastMessage: 'Завтра встретимся?', lastMessageTime: new Date(Date.now() - 86400000).toISOString(), unread: 0 },
@@ -42,7 +46,6 @@ function loadData() {
     if (savedMessages) {
         messages = JSON.parse(savedMessages);
     } else {
-        // Тестовые сообщения
         messages = {
             'chat1': [
                 { id: 'msg1', senderId: 'user1', text: 'Привет! Как дела?', time: new Date(Date.now() - 3600000).toISOString(), read: true },
@@ -115,14 +118,12 @@ function selectChat(chatId) {
     const chat = chats.find(c => c.id === chatId);
     if (!chat) return;
     
-    // Сбрасываем непрочитанные
     if (chat.unread > 0) {
         chat.unread = 0;
         saveData();
         renderChats();
     }
     
-    // Обновляем хедер
     const chatName = document.getElementById('chatName');
     const chatStatus = document.getElementById('chatStatus');
     const chatHeaderInfo = document.getElementById('chatHeaderInfo');
@@ -136,7 +137,6 @@ function selectChat(chatId) {
         chatStatus.textContent = user ? (user.status === 'online' ? '🟢 Онлайн' : '⚫ Не в сети') : '';
     }
     
-    // Добавляем обработчик для открытия профиля
     if (chatHeaderInfo) {
         chatHeaderInfo.onclick = () => {
             if (chat.type === 'personal') {
@@ -146,13 +146,11 @@ function selectChat(chatId) {
         };
     }
     
-    // Показываем инпут
     const inputWrapper = document.getElementById('chatInputWrapper');
     if (inputWrapper) inputWrapper.style.display = 'flex';
     
     renderMessages();
     
-    // На мобилке скрываем список чатов
     if (window.innerWidth <= 768) {
         const chatsList = document.getElementById('chatsList');
         if (chatsList) chatsList.classList.remove('mobile-show');
@@ -194,7 +192,6 @@ function renderMessages() {
         `;
     }).join('');
     
-    // Скролл вниз
     container.scrollTop = container.scrollHeight;
 }
 
@@ -216,7 +213,6 @@ function sendMessage() {
     }
     messages[currentChatId].push(newMsg);
     
-    // Обновляем последнее сообщение в чате
     const chat = chats.find(c => c.id === currentChatId);
     if (chat) {
         chat.lastMessage = text;
@@ -230,7 +226,6 @@ function sendMessage() {
     input.value = '';
     input.style.height = 'auto';
     
-    // Имитация ответа (для теста)
     setTimeout(() => {
         simulateReply(currentChatId);
     }, 1000 + Math.random() * 2000);
@@ -323,11 +318,140 @@ function createChat() {
     closeNewChatModal();
 }
 
+// ========== РАБОЧИЙ PARALLAX 2.5D ДЛЯ ОДНОЙ КАРТОЧКИ ==========
+let parallaxCard = null;
+let parallaxBg = null;
+let parallaxShadow = null;
+let animFrame = null;
+let targetRotX = 0, targetRotY = 0;
+let currentRotX = 0, currentRotY = 0;
+let targetBgX = 0, targetBgY = 0;
+let currentBgX = 0, currentBgY = 0;
+let targetShadowX = 0, targetShadowY = 0;
+let currentShadowX = 0, currentShadowY = 0;
+
+function initParallax() {
+    const container = document.querySelector('.cards-container');
+    const card = document.getElementById('profileCard3d');
+    const bg = document.getElementById('cardBgImg');
+    const shadow = document.getElementById('cardsShadow');
+    
+    if (!container || !card) return;
+    
+    parallaxCard = card;
+    parallaxBg = bg;
+    parallaxShadow = shadow;
+    
+    // Убираем анимацию и сбрасываем трансформации
+    card.classList.remove('animate-in', 'animate-out');
+    card.style.transition = 'none';
+    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    if (bg) {
+        bg.style.transition = 'none';
+        bg.style.transform = 'translate(0px, 0px) scale(1.15)';
+    }
+    if (shadow) {
+        shadow.style.transition = 'none';
+        shadow.style.transform = 'translate(0px, 0px)';
+        shadow.style.opacity = '0.5';
+    }
+    
+    // Принудительный reflow чтобы сброс применился
+    void card.offsetHeight;
+    
+    // Возвращаем transition для плавности
+    card.style.transition = 'transform 0.05s linear';
+    if (bg) bg.style.transition = 'transform 0.05s linear';
+    if (shadow) shadow.style.transition = 'transform 0.05s linear, opacity 0.1s ease';
+    
+    function onMove(e) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        targetRotY = ((x - centerX) / centerX) * 18;
+        targetRotX = -((y - centerY) / centerY) * 14;
+        
+        targetBgX = ((x - centerX) / centerX) * 30;
+        targetBgY = ((y - centerY) / centerY) * 25;
+        
+        targetShadowX = ((x - centerX) / centerX) * 20;
+        targetShadowY = ((y - centerY) / centerY) * 15;
+    }
+    
+    function onLeave() {
+        targetRotX = 0; targetRotY = 0;
+        targetBgX = 0; targetBgY = 0;
+        targetShadowX = 0; targetShadowY = 0;
+    }
+    
+    function animate() {
+        currentRotX += (targetRotX - currentRotX) * 0.12;
+        currentRotY += (targetRotY - currentRotY) * 0.12;
+        currentBgX += (targetBgX - currentBgX) * 0.12;
+        currentBgY += (targetBgY - currentBgY) * 0.12;
+        currentShadowX += (targetShadowX - currentShadowX) * 0.12;
+        currentShadowY += (targetShadowY - currentShadowY) * 0.12;
+        
+        if (parallaxCard) {
+            parallaxCard.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+        }
+        if (parallaxBg) {
+            parallaxBg.style.transform = `translate(${currentBgX}px, ${currentBgY}px) scale(1.15)`;
+        }
+        if (parallaxShadow) {
+            parallaxShadow.style.transform = `translate(${currentShadowX}px, ${currentShadowY}px)`;
+            let intensity = 0.4 + Math.abs(currentRotX) / 30 + Math.abs(currentRotY) / 30;
+            if (intensity > 0.7) intensity = 0.7;
+            parallaxShadow.style.opacity = intensity;
+        }
+        
+        animFrame = requestAnimationFrame(animate);
+    }
+    
+    container.removeEventListener('mousemove', onMove);
+    container.removeEventListener('mouseleave', onLeave);
+    container.addEventListener('mousemove', onMove);
+    container.addEventListener('mouseleave', onLeave);
+    
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animFrame = requestAnimationFrame(animate);
+}
+
+function stopParallax() {
+    if (animFrame) {
+        cancelAnimationFrame(animFrame);
+        animFrame = null;
+    }
+    if (parallaxCard) {
+        parallaxCard.style.transform = '';
+        parallaxCard.style.transition = '';
+    }
+    if (parallaxBg) {
+        parallaxBg.style.transform = '';
+        parallaxBg.style.transition = '';
+    }
+    if (parallaxShadow) {
+        parallaxShadow.style.transform = '';
+        parallaxShadow.style.opacity = '0.5';
+        parallaxShadow.style.transition = '';
+    }
+    targetRotX = 0; targetRotY = 0;
+    targetBgX = 0; targetBgY = 0;
+    targetShadowX = 0; targetShadowY = 0;
+    currentRotX = 0; currentRotY = 0;
+    currentBgX = 0; currentBgY = 0;
+    currentShadowX = 0; currentShadowY = 0;
+}
+
 function openProfileOverlay(userId, chatId) {
     const userData = usersProfileData[userId] || usersProfileData['user1'];
     const chat = chats.find(c => c.id === chatId);
     
     const avatarEl = document.getElementById('profileAvatar');
+    const bgImgEl = document.getElementById('cardBgImg');
     const nameEl = document.getElementById('profileName');
     const usernameEl = document.getElementById('profileUsername');
     const statusEl = document.getElementById('profileStatus');
@@ -337,6 +461,7 @@ function openProfileOverlay(userId, chatId) {
     const squadEl = document.getElementById('profileSquad');
     
     if (avatarEl) avatarEl.src = chat?.avatar || '../png/portrait.png';
+    if (bgImgEl) bgImgEl.src = chat?.avatar || '../png/portrait.png';
     if (nameEl) nameEl.textContent = userData.name;
     if (usernameEl) usernameEl.textContent = userData.username;
     if (statusEl) statusEl.textContent = userData.status === 'online' ? '🟢 Онлайн' : (userData.status === 'offline' ? '⚫ Не в сети' : '👥 Группа');
@@ -353,13 +478,40 @@ function openProfileOverlay(userId, chatId) {
     }
     
     const overlay = document.getElementById('profileOverlay');
-    if (overlay) overlay.classList.add('active');
+    const card = document.getElementById('profileCard3d');
+    
+    if (overlay) {
+        overlay.classList.add('active');
+        if (card) {
+            // Сначала показываем карточку с анимацией
+            card.classList.remove('animate-out');
+            card.classList.add('animate-in');
+            // Запускаем параллакс после завершения анимации появления
+            setTimeout(() => {
+                initParallax();
+            }, 600);
+        }
+    }
 }
 
 function closeProfileOverlay(event) {
     if (event && event.target !== event.currentTarget && !event.target.classList?.contains('close-profile-btn')) return;
+    
+    stopParallax();
+    
     const overlay = document.getElementById('profileOverlay');
-    if (overlay) overlay.classList.remove('active');
+    const card = document.getElementById('profileCard3d');
+    
+    if (card) {
+        card.style.transform = '';
+        card.classList.remove('animate-in');
+        card.classList.add('animate-out');
+    }
+    
+    setTimeout(() => {
+        if (overlay) overlay.classList.remove('active');
+        if (card) card.classList.remove('animate-out');
+    }, 400);
 }
 
 function toggleMobileChats() {
@@ -374,7 +526,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Падающие числа
 function createFallingNumbers() {
     const container = document.getElementById('fallingNumbers');
     if (!container) return;
@@ -401,13 +552,11 @@ function toggleMenu() {
     if (panel) panel.classList.toggle('active');
 }
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     createFallingNumbers();
     loadData();
     renderChats();
     
-    // Закрытие меню при клике вне
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('burgerMenu');
         const panel = document.getElementById('menuPanel');
@@ -416,7 +565,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Закрытие оверлея по ESC
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeProfileOverlay();
@@ -424,7 +572,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Авто-высота для textarea
     const textarea = document.getElementById('messageInput');
     if (textarea) {
         textarea.addEventListener('input', function() {
@@ -440,7 +587,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Адаптив при ресайзе
     window.addEventListener('resize', function() {
         if (window.innerWidth > 768) {
             const chatsList = document.getElementById('chatsList');
@@ -449,7 +595,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Экспорт глобальных функций
 window.toggleMenu = toggleMenu;
 window.selectChat = selectChat;
 window.sendMessage = sendMessage;
@@ -459,74 +604,3 @@ window.createChat = createChat;
 window.openProfileOverlay = openProfileOverlay;
 window.closeProfileOverlay = closeProfileOverlay;
 window.toggleMobileChats = toggleMobileChats;
-// 3D эффект для карточек (слежение за курсором)
-function init3DCards() {
-    const container = document.querySelector('.cards-container');
-    const stack = document.getElementById('cardsStack');
-    const shadow = document.querySelector('.cards-shadow');
-    const cards = document.querySelectorAll('.profile-card-3d');
-    const bgImages = document.querySelectorAll('.card-bg img');
-    
-    if (!container || !stack) return;
-    
-    container.addEventListener('mousemove', function(e) {
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        // Наклон в противоположную сторону от курсора
-        const rotateY = ((x - centerX) / centerX) * 15;
-        const rotateX = -((y - centerY) / centerY) * 10;
-        
-        // Применяем наклон к стопке карточек
-        stack.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        
-        // Эффект "глаз следит" - фон сдвигается
-        const bgShiftX = (x - centerX) / centerX * 20;
-        const bgShiftY = (y - centerY) / centerY * 15;
-        
-        bgImages.forEach(img => {
-            img.style.transform = `translate(${bgShiftX}px, ${bgShiftY}px) scale(1.1)`;
-        });
-        
-        // Тень тоже двигается
-        if (shadow) {
-            shadow.style.transform = `translate(${rotateY * 2}px, ${rotateX * 2}px)`;
-            shadow.style.opacity = 0.5 + Math.abs(rotateX) / 30;
-        }
-        
-        // Дополнительный эффект для каждой карточки (глубина)
-        cards.forEach((card, index) => {
-            const depth = (index - 3) * 0.5;
-            const cardRotateY = rotateY * (1 + depth * 0.1);
-            const cardRotateX = rotateX * (1 + depth * 0.05);
-            card.style.transform = `rotateX(${cardRotateX * 0.3}deg) rotateY(${cardRotateY * 0.3}deg)`;
-        });
-    });
-    
-    container.addEventListener('mouseleave', function() {
-        // Возвращаем всё в исходное положение
-        stack.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
-        bgImages.forEach(img => {
-            img.style.transform = 'translate(0px, 0px) scale(1)';
-        });
-        if (shadow) {
-            shadow.style.transform = 'translate(0px, 0px)';
-            shadow.style.opacity = 0.5;
-        }
-        cards.forEach(card => {
-            card.style.transform = '';
-        });
-    });
-}
-
-// Обнови функцию openProfileOverlay, добавив инициализацию 3D эффекта
-const originalOpenProfile = openProfileOverlay;
-window.openProfileOverlay = function(userId, chatId) {
-    originalOpenProfile(userId, chatId);
-    setTimeout(() => {
-        init3DCards();
-    }, 100);
-};

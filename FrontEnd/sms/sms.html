@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ЕПТА - Сообщения</title>
+    <link rel="stylesheet" href="../you/style.css">
+    <link rel="stylesheet" href="sms.css">
+</head>
+<body>
+    <!-- Фоновое видео -->
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="../oboi/video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="falling-numbers" id="fallingNumbers"></div>
+
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-panel" id="menuPanel">
+            <div class="menu-content">
+                <a href="../lenta/feed.html" class="menu-item">
+                    <img src="../png/grid.png" class="menu-icon" alt=""> Лента
+                </a>
+                <a href="../you/index.html" class="menu-item">
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
+                </a>
+                <a href="#" class="menu-item">
+                    <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
+                </a>
+                <a href="sms.html" class="menu-item active">
+                    <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="../you/index.html" class="logo">ЕПТА</a>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Поиск...">
+            </div>
+        </div>
+    </header>
+
+    <div class="sms-container">
+        <div class="sms-grid">
+            <!-- Список чатов -->
+            <div class="chats-list" id="chatsList">
+                <div class="chats-header">
+                    <span>Чаты</span>
+                    <button class="new-chat-btn glass-btn" onclick="createNewChat()">+</button>
+                </div>
+                <div class="chats-scroll" id="chatsScroll">
+                    <!-- Динамическая загрузка чатов -->
+                </div>
+            </div>
+
+            <!-- Область переписки -->
+            <div class="chat-area" id="chatArea">
+                <div class="chat-header" id="chatHeader">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="back-to-chats" id="backToChatsBtn" onclick="toggleMobileChats()">
+                            ←
+                        </button>
+                        <div class="chat-header-info" id="chatHeaderInfo">
+                            <div class="chat-avatar">
+                                <img src="../png/portrait.png" alt="">
+                            </div>
+                            <div class="chat-details">
+                                <div class="chat-name" id="chatName">Выберите чат</div>
+                                <div class="chat-status" id="chatStatus"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-chat">
+                        <img src="../png/comment.png" alt="">
+                        <p>Выберите чат, чтобы начать общение</p>
+                    </div>
+                </div>
+                <div class="chat-input-wrapper" id="chatInputWrapper" style="display: none;">
+                    <textarea id="messageInput" placeholder="Сообщение..." rows="1"></textarea>
+                    <button class="send-btn glass-btn" onclick="sendMessage()">
+                        <img src="../png/paper-plane.png" alt="">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Микро-профиль с 3D эффектом (ОДНА КАРТОЧКА) -->
+    <div class="profile-overlay" id="profileOverlay" onclick="closeProfileOverlay(event)">
+        <div class="cards-container">
+            <div class="profile-card-3d" id="profileCard3d">
+                <div class="card-bg"><img id="cardBgImg" src="../png/portrait.png" alt=""></div>
+                <div class="card-gloss"></div>
+                <div class="card-content">
+                    <div class="profile-card-avatar"><img id="profileAvatar" src="../png/portrait.png" alt=""></div>
+                    <div class="profile-card-name" id="profileName">@username</div>
+                    <div class="profile-card-username" id="profileUsername">@username</div>
+                    <div class="profile-card-status" id="profileStatus">Онлайн</div>
+                    <div class="profile-card-details">
+                        <div class="profile-card-detail"><span class="profile-card-detail-label">Город:</span><span class="profile-card-detail-value" id="profileCity">---</span></div>
+                        <div class="profile-card-detail"><span class="profile-card-detail-label">Возраст:</span><span class="profile-card-detail-value" id="profileAge">---</span></div>
+                        <div class="profile-card-detail"><span class="profile-card-detail-label">Пол:</span><span class="profile-card-detail-value" id="profileGender">---</span></div>
+                        <div class="profile-card-detail"><span class="profile-card-detail-label">Сквад:</span><span class="profile-card-detail-value" id="profileSquad">---</span></div>
+                    </div>
+                    <button class="profile-card-btn" id="profileOpenBtn">
+                        <img src="../png/portrait.png" class="icon-18" alt=""> Открыть страницу
+                    </button>
+                </div>
+            </div>
+            <div class="cards-shadow" id="cardsShadow"></div>
+        </div>
+        <button class="close-profile-btn" onclick="closeProfileOverlay()">✕</button>
+    </div>
+
+    <!-- Модалка нового чата -->
+    <div class="modal-overlay" id="newChatModal">
+        <div class="modal">
+            <div class="modal-title">Новый чат</div>
+            <input type="text" class="modal-input" id="newChatName" placeholder="Имя пользователя или название группы">
+            <select class="modal-input" id="newChatType">
+                <option value="personal">Личный чат</option>
+                <option value="group">Группа</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn btn-secondary glass-btn" onclick="closeNewChatModal()">Отмена</button>
+                <button class="btn btn-primary glass-btn" onclick="createChat()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../you/comments.js"></script>
+    <script src="../you/reposts.js"></script>
+    <script src="../you/likes.js"></script>
+    <script src="sms.js"></script>
+</body>
+</html>

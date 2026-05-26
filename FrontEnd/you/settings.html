@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ЕПТА - Настройки</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #000000;
+            color: #e0ffe0;
+            min-height: 100vh;
+        }
+
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .falling-numbers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .falling-number {
+            position: absolute;
+            top: -40px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: fallDown linear forwards;
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        .falling-number:nth-child(3n+1) { color: #61DE2A; }
+        .falling-number:nth-child(3n+2) { color: #3BA51A; }
+        .falling-number:nth-child(3n+3) { color: #8FDF4A; }
+
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-40px) rotate(0deg);
+                opacity: 0.2;
+            }
+            80% {
+                opacity: 0.08;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            border-bottom: 2px solid #61DE2A;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            color: #61DE2A;
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 2px solid #61DE2A;
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #61DE2A;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input::placeholder {
+            color: #444444;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(97, 222, 42, 0.4);
+        }
+
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .burger-icon {
+            width: 30px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .burger-icon span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: #61DE2A;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 2px solid #61DE2A;
+            box-shadow: -5px 0 30px rgba(97, 222, 42, 0.3);
+            transition: right 0.3s;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .menu-panel.active {
+            right: 0;
+        }
+
+        .menu-content {
+            padding: 60px 20px 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(97, 222, 42, 0.1);
+            color: #61DE2A;
+        }
+
+        .menu-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .settings-card {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 2px solid #61DE2A;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .settings-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #61DE2A;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid rgba(97, 222, 42, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-name {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .test-sound-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .sound-test-btn {
+            padding: 12px 20px;
+            background: rgba(97, 222, 42, 0.1);
+            border: 1px solid #61DE2A;
+            border-radius: 25px;
+            color: #61DE2A;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .sound-test-btn:hover {
+            background: rgba(97, 222, 42, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(97, 222, 42, 0.3);
+        }
+
+        .volume-slider {
+            width: 150px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #61DE2A;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #61DE2A;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(97, 222, 42, 0.1);
+            border-radius: 25px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            background: rgba(97, 222, 42, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .sound-status {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(97, 222, 42, 0.1);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #61DE2A;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: rgba(97, 222, 42, 0.1);
+            color: #61DE2A;
+            border: 2px solid #61DE2A;
+        }
+
+        .btn-primary:hover {
+            background: #61DE2A;
+            color: #000;
+            box-shadow: 0 0 40px rgba(97, 222, 42, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.7);
+            color: #888888;
+            border: 1px solid #333333;
+        }
+
+        .btn-secondary:hover {
+            background: #333333;
+            border-color: #61DE2A;
+            color: #61DE2A;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-slider {
+            width: 44px;
+            height: 24px;
+            background: #333;
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s;
+            border: 1px solid #555;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #888;
+            top: 1px;
+            left: 1px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: rgba(97, 222, 42, 0.3);
+            border-color: #61DE2A;
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            background: #61DE2A;
+            left: 21px;
+            box-shadow: 0 0 8px rgba(97, 222, 42, 0.6);
+        }
+
+        .toggle-label {
+            color: #61DE2A;
+            font-size: 12px;
+        }
+
+        .glass-btn {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-btn:hover {
+            background: rgba(97, 222, 42, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(97, 222, 42, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(97, 222, 42, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .icon-16 { width: 16px; height: 16px; object-fit: contain; }
+        .icon-18 { width: 18px; height: 18px; object-fit: contain; }
+        .icon-20 { width: 20px; height: 20px; object-fit: contain; }
+        .icon-24 { width: 24px; height: 24px; object-fit: contain; }
+
+        @media (max-width: 768px) {
+            .settings-card { padding: 20px; }
+            .test-sound-buttons { gap: 8px; }
+            .sound-test-btn { padding: 8px 12px; font-size: 12px; }
+            .header-inner { gap: 10px; }
+            .logo { font-size: 22px; }
+            .menu-panel { width: 280px; right: -280px; }
+        }
+    </style>
+</head>
+<body>
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="../oboi/video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="falling-numbers" id="fallingNumbers"></div>
+
+    <!-- ЕПТА Бургер меню -->
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-panel" id="menuPanel">
+            <div class="menu-content">
+                <div style="text-align: center; margin-bottom: 30px; padding: 10px;">
+                    <div style="color: #61DE2A; font-size: 24px; font-weight: 800; letter-spacing: 3px;">ЕПТА</div>
+                    <div style="color: #888; font-size: 12px; margin-top: 5px;">социальная сеть</div>
+                </div>
+                <a href="../lenta/feed.html" class="menu-item">
+                    <img src="../png/grid.png" class="menu-icon" alt=""> Лента
+                </a>
+                <a href="../profile/index.html" class="menu-item">
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
+                </a>
+                <a href="settings.html" class="menu-item" style="background: rgba(97, 222, 42, 0.15); color: #61DE2A;">
+                    <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
+                </a>
+                <a href="../sms/sms.html" class="menu-item">
+                    <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
+                </a>
+                <div style="margin-top: 30px; padding: 20px; border-top: 1px solid rgba(97, 222, 42, 0.2);">
+                    <div style="color: #61DE2A; font-size: 12px; text-align: center;">⚡ ЕПТА v1.0</div>
+                    <div style="color: #555; font-size: 10px; text-align: center; margin-top: 5px;">сделано с душой</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="../lenta/feed.html" class="logo">ЕПТА</a>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Поиск...">
+            </div>
+        </div>
+    </header>
+
+    <div class="settings-container">
+        <div class="back-link" onclick="goBack()">
+            ← Назад
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-title">
+                ⚙️ Настройки ЕПТА
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    🔊 Звуки ЕПТА
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Звуковые эффекты</div>
+                        <div class="setting-desc">Вкл/Выкл звуки интерфейса</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Громкость ЕПТА</div>
+                        <div class="setting-desc">Настройка громкости (0-100%)</div>
+                    </div>
+                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30">
+                </div>
+
+                <div class="test-sound-buttons">
+                    <button class="sound-test-btn" data-sound="positive">✅ ЕПТА+</button>
+                    <button class="sound-test-btn" data-sound="negative">❌ ЕПТА-</button>
+                    <button class="sound-test-btn" data-sound="ding">🔔 ЕПТА Динь</button>
+                    <button class="sound-test-btn" data-sound="alert">⚠️ ЕПТА Сигнал</button>
+                    <button class="sound-test-btn" data-sound="click">🖱️ ЕПТА Клик</button>
+                    <button class="sound-test-btn" data-sound="success">🎉 ЕПТА Успех</button>
+                </div>
+
+                <div class="sound-status" id="soundStatus">
+                    🎵 ЕПТА Звуки готовы! Нажми на любую кнопку.
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    👤 ЕПТА Профиль
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Аккаунт ЕПТА</div>
+                        <div class="setting-desc">Управление аккаунтом</div>
+                    </div>
+                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Функция в разработке!')">
+                        Управление
+                    </button>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Приватность ЕПТА</div>
+                        <div class="setting-desc">Настройки конфиденциальности</div>
+                    </div>
+                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Функция в разработке!')">
+                        Настроить
+                    </button>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Тема ЕПТА</div>
+                        <div class="setting-desc">Стиль оформления</div>
+                    </div>
+                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Скоро будут темы!')">
+                        Тёмная ЕПТА
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    ℹ️ О ЕПТА
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Версия ЕПТА</div>
+                        <div class="setting-desc">Текущая версия соцсети</div>
+                    </div>
+                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА v1.0.0\n\nЕПТА - социальная сеть для своих\nСделано с любовью и 42')">
+                        v1.0.0
+                    </button>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-name">Разработчики ЕПТА</div>
+                        <div class="setting-desc">Кто сделал эту крутую штуку</div>
+                    </div>
+                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА Сrew\n\nСделано командой ЕПТА\n2024')">
+                        ЕПТА Team
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function toggleMenu() {
+            const panel = document.getElementById('menuPanel');
+            panel.classList.toggle('active');
+            
+            // Визуальная анимация бургера
+            const spans = document.querySelectorAll('.burger-icon span');
+            if (panel.classList.contains('active')) {
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+            } else {
+                spans[0].style.transform = 'none';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('burgerMenu');
+            const panel = document.getElementById('menuPanel');
+            if (menu && panel && !menu.contains(e.target) && panel.classList.contains('active')) {
+                toggleMenu();
+            }
+        });
+
+        function createFallingNumbers() {
+            const container = document.getElementById('fallingNumbers');
+            if (!container) return;
+            
+            function spawnNumber() {
+                const number = document.createElement('div');
+                number.className = 'falling-number';
+                const numbers = ['42', 'ЕПТА', '⚡', '🌿', '🔥'];
+                number.textContent = numbers[Math.floor(Math.random() * numbers.length)];
+                
+                const size = Math.random() * 14 + 10;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 12 + 8;
+                const delay = Math.random() * 5;
+                
+                number.style.cssText = `
+                    left: ${left}%;
+                    font-size: ${size}px;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                `;
+                
+                container.appendChild(number);
+                
+                setTimeout(() => {
+                    if (number.parentNode) number.remove();
+                }, (duration + delay) * 1000 + 500);
+            }
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => spawnNumber(), i * 100);
+            }
+            
+            setInterval(() => {
+                if (container.children.length < 50) {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => spawnNumber(), i * 100);
+                    }
+                }
+            }, 500);
+        }
+
+        createFallingNumbers();
+
+        const SoundSystem = {
+            audioContext: null,
+            enabled: true,
+            volume: 0.3,
+            
+            init: function() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    const savedEnabled = localStorage.getItem('epta_sound_enabled');
+                    const savedVolume = localStorage.getItem('epta_sound_volume');
+                    
+                    if (savedEnabled !== null) this.enabled = savedEnabled === 'true';
+                    if (savedVolume !== null) {
+                        this.volume = parseFloat(savedVolume);
+                    }
+                    
+                    this.updateUI();
+                    console.log('🎵 ЕПТА Sound system initialized');
+                    
+                    const activateSound = () => {
+                        if (this.audioContext && this.audioContext.state === 'suspended') {
+                            this.audioContext.resume();
+                            const statusDiv = document.getElementById('soundStatus');
+                            if (statusDiv) statusDiv.innerHTML = '🔊 ЕПТА Звуки активированы! Жми на кнопки!';
+                        }
+                    };
+                    
+                    document.addEventListener('click', activateSound);
+                    document.addEventListener('touchstart', activateSound);
+                    
+                } catch (e) {
+                    console.error('Web Audio API not supported:', e);
+                }
+            },
+            
+            playTone: function(frequency, duration, volume = 0.3, type = 'sine') {
+                if (!this.enabled || !this.audioContext) return;
+                
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+                
+                const now = this.audioContext.currentTime;
+                const gainNode = this.audioContext.createGain();
+                gainNode.gain.value = 0;
+                gainNode.connect(this.audioContext.destination);
+                
+                const oscillator = this.audioContext.createOscillator();
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                oscillator.connect(gainNode);
+                
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(volume * this.volume, now + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                
+                oscillator.start();
+                oscillator.stop(now + duration);
+            },
+            
+            playPositive: function() {
+                this.playTone(523.25, 0.2, 0.3);
+                setTimeout(() => this.playTone(659.25, 0.2, 0.3), 150);
+                setTimeout(() => this.playTone(783.99, 0.3, 0.3), 300);
+            },
+            
+            playNegative: function() {
+                this.playTone(220, 0.4, 0.25, 'sawtooth');
+            },
+            
+            playDing: function() {
+                this.playTone(880, 0.5, 0.2);
+            },
+            
+            playAlert: function() {
+                this.playTone(440, 0.3, 0.3, 'square');
+                setTimeout(() => this.playTone(440, 0.3, 0.3, 'square'), 350);
+            },
+            
+            playClick: function() {
+                this.playTone(800, 0.08, 0.15, 'triangle');
+            },
+            
+            playSuccess: function() {
+                this.playTone(523.25, 0.2, 0.3);
+                setTimeout(() => this.playTone(659.25, 0.2, 0.3), 150);
+                setTimeout(() => this.playTone(783.99, 0.3, 0.3), 300);
+                setTimeout(() => this.playTone(1046.5, 0.4, 0.25), 500);
+            },
+            
+            play: function(soundName) {
+                if (!this.enabled) return;
+                
+                const sounds = {
+                    positive: () => this.playPositive(),
+                    negative: () => this.playNegative(),
+                    ding: () => this.playDing(),
+                    alert: () => this.playAlert(),
+                    click: () => this.playClick(),
+                    success: () => this.playSuccess()
+                };
+                
+                if (sounds[soundName]) {
+                    sounds[soundName]();
+                }
+            },
+            
+            setVolume: function(value) {
+                this.volume = Math.max(0, Math.min(1, value));
+                localStorage.setItem('epta_sound_volume', this.volume);
+            },
+            
+            setEnabled: function(enabled) {
+                this.enabled = enabled;
+                localStorage.setItem('epta_sound_enabled', enabled);
+                this.updateUI();
+            },
+            
+            updateUI: function() {
+                const toggle = document.getElementById('soundToggle');
+                const slider = document.getElementById('volumeSlider');
+                if (toggle) toggle.checked = this.enabled;
+                if (slider) slider.value = this.volume * 100;
+            }
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            SoundSystem.init();
+            
+            const soundToggle = document.getElementById('soundToggle');
+            const volumeSlider = document.getElementById('volumeSlider');
+            
+            if (soundToggle) {
+                soundToggle.addEventListener('change', function(e) {
+                    SoundSystem.setEnabled(e.target.checked);
+                });
+            }
+            
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', function(e) {
+                    SoundSystem.setVolume(e.target.value / 100);
+                    const statusDiv = document.getElementById('soundStatus');
+                    if (statusDiv) statusDiv.innerHTML = `🔊 ЕПТА Громкость: ${e.target.value}%`;
+                    setTimeout(() => {
+                        if (statusDiv && !soundToggle.checked) {
+                            statusDiv.innerHTML = '🔇 ЕПТА Звуки выключены';
+                        } else if (statusDiv) {
+                            statusDiv.innerHTML = '🔊 ЕПТА Звуки активны! Жми на кнопки!';
+                        }
+                    }, 1500);
+                });
+            }
+            
+            document.querySelectorAll('.sound-test-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const soundName = this.dataset.sound;
+                    if (soundName) {
+                        SoundSystem.play(soundName);
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    }
+                });
+            });
+        });
+        
+        window.SoundSystem = SoundSystem;
+        window.toggleMenu = toggleMenu;
+        window.goBack = goBack;
+    </script>
+</body>
+</html>
