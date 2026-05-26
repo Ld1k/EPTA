@@ -2,6 +2,7 @@
 .icon-18 { width: 18px; height: 18px; object-fit: contain; }
 .icon-20 { width: 20px; height: 20px; object-fit: contain; }
 .icon-24 { width: 24px; height: 24px; object-fit: contain; }
+.icon-48 { width: 48px; height: 48px; object-fit: contain; }
 
 .feed-container {
     max-width: 1000px;
@@ -19,6 +20,152 @@
 
 .feed-main { min-width: 0; }
 
+/* Креатор поста */
+.feed-post-creator {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #61DE2A;
+}
+
+.feed-post-creator-header {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.feed-post-creator-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(34, 34, 34, 0.95);
+    border: 2px solid #61DE2A;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.feed-post-creator-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.feed-post-creator-input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 14px 18px;
+    color: #e0e0e0;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 70px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.feed-post-creator-input:focus {
+    border-color: #61DE2A;
+    box-shadow: 0 0 20px rgba(97, 222, 42, 0.3);
+}
+
+.feed-post-creator-input::placeholder {
+    color: #444;
+}
+
+.feed-post-creator-actions {
+    margin-left: 60px;
+}
+
+.feed-creator-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.feed-creator-file {
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid rgba(97, 222, 42, 0.3);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #61DE2A;
+}
+
+.feed-creator-file-remove {
+    cursor: pointer;
+    color: #ff4444;
+    font-weight: bold;
+}
+
+.feed-creator-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.feed-creator-btn {
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(97, 222, 42, 0.3);
+    border-radius: 20px;
+    color: #888;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+}
+
+.feed-creator-btn:hover {
+    background: rgba(97, 222, 42, 0.15);
+    border-color: #61DE2A;
+    color: #61DE2A;
+}
+
+.feed-submit-btn {
+    padding: 8px 20px;
+    background: rgba(97, 222, 42, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid #61DE2A;
+    border-radius: 20px;
+    color: #61DE2A;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+}
+
+.feed-submit-btn:hover {
+    background: rgba(97, 222, 42, 0.2);
+    box-shadow: 0 0 15px rgba(97, 222, 42, 0.3);
+}
+
+.post-cooldown {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    background: rgba(97, 222, 42, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(97, 222, 42, 0.3);
+    color: #61DE2A;
+    font-size: 13px;
+}
+
+/* Табы */
 .feed-tabs {
     display: flex;
     background: rgba(0, 0, 0, 0.7);
@@ -49,6 +196,7 @@
     border-bottom: 3px solid #61DE2A;
 }
 
+/* Фильтры */
 .filters-bar {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
@@ -87,6 +235,7 @@
     color: #61DE2A;
 }
 
+/* Контент */
 .feed-content {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
@@ -97,6 +246,7 @@
     min-height: 600px;
 }
 
+/* Пост */
 .feed-post {
     padding: 20px;
     margin-bottom: 15px;
@@ -156,6 +306,7 @@
     word-break: break-word;
 }
 
+/* Действия с постом */
 .feed-post-actions {
     display: flex;
     gap: 12px;
@@ -203,6 +354,43 @@
     box-shadow: 0 0 10px rgba(97, 222, 42, 0.3);
 }
 
+/* Файлы в постах */
+.post-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.post-file-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+
+.post-file-video {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.post-file-other {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid #61DE2A;
+    border-radius: 8px;
+    color: #61DE2A;
+    font-size: 13px;
+}
+
+/* Сайдбар */
 .feed-sidebar {
     display: flex;
     flex-direction: column;
@@ -226,6 +414,7 @@
     letter-spacing: 2px;
 }
 
+/* Хештеги */
 .hashtags-cloud {
     display: flex;
     flex-wrap: wrap;
@@ -249,51 +438,117 @@
     box-shadow: 0 0 15px rgba(97, 222, 42, 0.2);
 }
 
+/* Топ посты */
 .popular-posts {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.popular-post-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+.top-post-full {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
     border: 1px solid #333;
-    transition: all 0.3s;
     cursor: pointer;
+    transition: all 0.3s;
 }
 
-.popular-post-item:hover {
+.top-post-full:hover {
     border-color: #61DE2A;
     background: rgba(97, 222, 42, 0.05);
 }
 
-.popular-post-rank {
-    font-size: 24px;
-    font-weight: 800;
+/* Поиск */
+.search-section {
+    margin-bottom: 25px;
+}
+
+.search-section-title {
+    font-size: 16px;
+    font-weight: 700;
     color: #61DE2A;
-    min-width: 40px;
-    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(97, 222, 42, 0.3);
 }
 
-.popular-post-info { flex: 1; }
+.search-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
 
-.popular-post-text {
-    font-size: 14px;
+.search-user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-user-item:hover {
+    border-color: #61DE2A;
+    background: rgba(97, 222, 42, 0.1);
+}
+
+.search-user-info {
+    flex: 1;
+}
+
+.search-user-name {
+    font-weight: 600;
     color: #e0e0e0;
-    margin-bottom: 5px;
+    font-size: 14px;
 }
 
-.popular-post-stats { font-size: 11px; color: #666; }
+.search-user-stats {
+    font-size: 11px;
+    color: #666;
+}
 
+.search-hashtags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-hashtag {
+    padding: 6px 14px;
+    background: rgba(97, 222, 42, 0.1);
+    border: 1px solid rgba(97, 222, 42, 0.3);
+    border-radius: 20px;
+    color: #61DE2A;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-hashtag:hover {
+    background: rgba(97, 222, 42, 0.2);
+    border-color: #61DE2A;
+}
+
+.search-empty {
+    text-align: center;
+    padding: 60px;
+    color: #888;
+}
+
+/* Меню */
 .menu-item.active {
     background: rgba(97, 222, 42, 0.15);
     color: #61DE2A;
 }
 
+/* Репосты */
 .repost-contacts {
     display: flex;
     flex-direction: column;
@@ -315,6 +570,7 @@
     background: rgba(97, 222, 42, 0.1);
 }
 
+/* Адаптив */
 @media (max-width: 768px) {
     .feed-grid { grid-template-columns: 1fr; }
     .feed-sidebar { order: 2; }
@@ -323,75 +579,22 @@
     .feed-post-actions { gap: 8px; }
     .stat-view { padding: 4px 10px; font-size: 12px; }
     .post-action-btn { padding: 4px 10px; font-size: 12px; }
+    .feed-post-creator-actions { margin-left: 50px; }
+    .feed-creator-btn, .feed-submit-btn { padding: 6px 12px; font-size: 11px; }
+    .post-file-image { max-width: 150px; max-height: 150px; }
+    .post-file-video { max-width: 220px; max-height: 160px; }
 }
 
-/* Стили для файлов в постах ленты */
-.post-files {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.post-file-image {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid #333;
-    cursor: pointer;
-}
-
-.post-file-video {
-    max-width: 300px;
-    max-height: 200px;
-    border-radius: 10px;
-    border: 1px solid #333;
-}
-
-.post-file-other {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 15px;
-    background: rgba(97, 222, 42, 0.1);
-    border: 1px solid #61DE2A;
-    border-radius: 8px;
-    color: #61DE2A;
-    font-size: 13px;
-}
-
-.post-files {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.post-file-image {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid #333;
-    cursor: pointer;
-}
-
-.post-file-video {
-    max-width: 300px;
-    max-height: 200px;
-    border-radius: 10px;
-    border: 1px solid #333;
-}
-
-.post-file-other {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 15px;
-    background: rgba(97, 222, 42, 0.1);
-    border: 1px solid #61DE2A;
-    border-radius: 8px;
-    color: #61DE2A;
-    font-size: 13px;
+@media (max-width: 480px) {
+    .feed-container { padding: 0 10px; }
+    .feed-content { padding: 12px; }
+    .feed-post { padding: 12px; }
+    .feed-post-creator { padding: 12px; }
+    .feed-post-creator-avatar { width: 40px; height: 40px; }
+    .feed-post-creator-input { padding: 10px 12px; font-size: 13px; min-height: 60px; }
+    .post-file-image { max-width: 120px; max-height: 120px; }
+    .post-file-video { max-width: 180px; max-height: 140px; }
+    .search-section-title { font-size: 14px; }
+    .search-user-name { font-size: 13px; }
+    .search-hashtag { font-size: 11px; padding: 4px 10px; }
 }

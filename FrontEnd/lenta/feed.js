@@ -4,6 +4,8 @@ publicPosts = publicPosts.map(p => ({...p, date: new Date(p.date), files: p.file
 let currentFeedFilter = 'date';
 let currentFeedTab = 'recommendations';
 let currentFeedPostId = null;
+let currentSearchQuery = '';
+let isSearchMode = false;
 
 let feedPendingFiles = [];
 
@@ -112,6 +114,64 @@ function formatCooldownTime(seconds) {
     return `${seconds} сек`;
 }
 
+// ==================== INDEXEDDB ДЛЯ ФАЙЛОВ ====================
+let db = null;
+
+function initIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('epta_files_db', 1);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            db = request.result;
+            resolve();
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('files')) {
+                db.createObjectStore('files', { keyPath: 'id' });
+            }
+        };
+    });
+}
+
+async function saveFileToDB(file) {
+    await initIndexedDB();
+    const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const transaction = db.transaction(['files'], 'readwrite');
+            const store = transaction.objectStore('files');
+            const fileData = {
+                id: fileId,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: reader.result
+            };
+            const request = store.put(fileData);
+            request.onsuccess = () => resolve(fileId);
+            request.onerror = () => reject(request.error);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function getFileFromDB(fileId) {
+    await initIndexedDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['files'], 'readonly');
+        const store = transaction.objectStore('files');
+        const request = store.get(fileId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
 function formatNumber(num) {
@@ -120,8 +180,10 @@ function formatNumber(num) {
     return num.toString();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     createFallingNumbers();
+    await initIndexedDB();
+    await loadPostsFromStorage();
     refreshPublicPosts();
     renderFeed();
     updateSidebar();
@@ -130,11 +192,60 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('feedFileInput')?.addEventListener('change', function(e) {
         handleFeedFiles(Array.from(e.target.files));
     });
+    
+    // Настройка поиска
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+            if (query.length >= 2) {
+                performSearch(query);
+            } else if (query.length === 0) {
+                clearSearch();
+            }
+        });
+        
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query.length >= 2) {
+                    performSearch(query);
+                } else if (query.length === 0) {
+                    clearSearch();
+                }
+            }
+        });
+    }
 });
 
+async function loadPostsFromStorage() {
+    const savedPosts = localStorage.getItem('epta_public_posts');
+    if (savedPosts) {
+        const parsed = JSON.parse(savedPosts);
+        publicPosts = [];
+        for (let p of parsed) {
+            const files = [];
+            if (p.fileIds && p.fileIds.length) {
+                for (let fileId of p.fileIds) {
+                    const fileData = await getFileFromDB(fileId);
+                    if (fileData) {
+                        files.push(fileData);
+                    }
+                }
+            }
+            publicPosts.push({
+                ...p,
+                date: new Date(p.date),
+                files: files,
+                views: p.views || 0,
+                viewedBy: p.viewedBy || []
+            });
+        }
+    }
+}
+
 function refreshPublicPosts() {
-    publicPosts = JSON.parse(localStorage.getItem('epta_public_posts') || '[]');
-    publicPosts = publicPosts.map(p => ({...p, date: new Date(p.date), files: p.files || [], views: p.views || 0, viewedBy: p.viewedBy || []}));
+    // Посты уже загружены через loadPostsFromStorage
 }
 
 function createFallingNumbers() {
@@ -172,6 +283,10 @@ function switchFeedTab(btn, tabName) {
     document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     currentFeedTab = tabName;
+    isSearchMode = false;
+    currentSearchQuery = '';
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) searchInput.value = '';
     renderFeed();
 }
 
@@ -182,6 +297,182 @@ function setFeedFilter(filter, btn) {
     renderFeed();
 }
 
+// ==================== ПОИСК ====================
+
+function performSearch(query) {
+    if (!query || query.length < 2) return;
+    
+    currentSearchQuery = query.toLowerCase();
+    isSearchMode = true;
+    
+    // Получаем всех пользователей из localStorage
+    let allUsers = [];
+    try {
+        const usersData = localStorage.getItem('epta_users');
+        if (usersData) {
+            allUsers = JSON.parse(usersData);
+        }
+    } catch(e) {}
+    
+    // Добавляем текущего пользователя
+    allUsers.push({ username: currentUsername });
+    
+    // Получаем уникальных авторов из постов
+    const postAuthors = [...new Set(publicPosts.map(p => p.author))];
+    allUsers = [...allUsers, ...postAuthors.map(a => ({ username: a }))];
+    allUsers = [...new Map(allUsers.map(u => [u.username, u])).values()];
+    
+    // Поиск пользователей
+    const matchedUsers = allUsers.filter(user => 
+        user.username && user.username.toLowerCase().includes(currentSearchQuery)
+    );
+    
+    // Поиск хештегов
+    const allHashtags = new Set();
+    publicPosts.forEach(post => {
+        const hashtags = extractHashtags(post.text || '');
+        hashtags.forEach(tag => allHashtags.add(tag));
+    });
+    const matchedHashtags = Array.from(allHashtags).filter(tag => 
+        tag.toLowerCase().includes(currentSearchQuery)
+    );
+    
+    // Поиск постов
+    let matchedPosts = publicPosts.filter(post => {
+        // По тексту
+        if (post.text && post.text.toLowerCase().includes(currentSearchQuery)) return true;
+        // По автору
+        if (post.author && post.author.toLowerCase().includes(currentSearchQuery)) return true;
+        // По хештегам
+        const hashtags = extractHashtags(post.text || '');
+        if (hashtags.some(tag => tag.toLowerCase().includes(currentSearchQuery))) return true;
+        return false;
+    });
+    
+    // Сортируем результаты по релевантности
+    matchedPosts = matchedPosts.sort((a, b) => {
+        const scoreA = getRelevanceScore(a, currentSearchQuery);
+        const scoreB = getRelevanceScore(b, currentSearchQuery);
+        return scoreB - scoreA;
+    });
+    
+    // Отображаем результаты
+    renderSearchResults(matchedUsers, matchedHashtags, matchedPosts);
+}
+
+function getRelevanceScore(post, query) {
+    let score = 0;
+    const lowerQuery = query.toLowerCase();
+    const lowerText = (post.text || '').toLowerCase();
+    const lowerAuthor = (post.author || '').toLowerCase();
+    
+    // Точное совпадение в тексте
+    if (lowerText === lowerQuery) score += 100;
+    // Частичное совпадение в тексте
+    else if (lowerText.includes(lowerQuery)) score += 50;
+    
+    // Точное совпадение в авторе
+    if (lowerAuthor === lowerQuery) score += 80;
+    else if (lowerAuthor.includes(lowerQuery)) score += 40;
+    
+    // Совпадение в хештегах
+    const hashtags = extractHashtags(post.text || '');
+    hashtags.forEach(tag => {
+        if (tag.toLowerCase() === '#' + lowerQuery) score += 70;
+        else if (tag.toLowerCase().includes(lowerQuery)) score += 30;
+    });
+    
+    // Добавляем популярность поста
+    const popularity = (Likes.getLikeCount(post.id) || 0) + 
+                      (Comments.getCommentCount(post.id) || 0) + 
+                      (Reposts.getRepostCount(post.id) || 0) + 
+                      (post.views || 0);
+    score += Math.min(popularity / 10, 50);
+    
+    // Свежесть
+    const daysSince = (Date.now() - new Date(post.date).getTime()) / (1000 * 60 * 60 * 24);
+    score += Math.max(0, 30 - daysSince);
+    
+    return score;
+}
+
+async function renderSearchResults(users, hashtags, posts) {
+    const container = document.getElementById('feedPosts');
+    if (!container) return;
+    
+    let html = '';
+    
+    // Секция пользователей
+    if (users.length > 0) {
+        html += `
+            <div class="search-section">
+                <div class="search-section-title">👥 Пользователи (${users.length})</div>
+                <div class="search-users-list">
+                    ${users.slice(0, 5).map(user => `
+                        <div class="search-user-item" onclick="searchByAuthor('${escapeHtml(user.username)}')">
+                            <img src="../png/portrait.png" class="icon-24" style="border-radius:50%;">
+                            <div class="search-user-info">
+                                <div class="search-user-name">${escapeHtml(user.username)}</div>
+                                <div class="search-user-stats">Пользователь</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Секция хештегов
+    if (hashtags.length > 0) {
+        html += `
+            <div class="search-section">
+                <div class="search-section-title">🏷️ Хештеги (${hashtags.length})</div>
+                <div class="search-hashtags-list">
+                    ${hashtags.slice(0, 10).map(tag => `
+                        <span class="search-hashtag" onclick="searchByHashtag('${tag.replace('#', '')}')">${escapeHtml(tag)}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Секция постов
+    if (posts.length > 0) {
+        html += `
+            <div class="search-section">
+                <div class="search-section-title">📝 Посты (${posts.length})</div>
+            </div>
+        `;
+        for (let post of posts) {
+            html += await renderPostHTML(post);
+        }
+    }
+    
+    if (users.length === 0 && hashtags.length === 0 && posts.length === 0) {
+        html = `
+            <div class="search-empty">
+                <img src="../png/cross.png" class="icon-48" style="opacity:0.5; margin-bottom:15px;">
+                <p>Ничего не найдено по запросу "${escapeHtml(currentSearchQuery)}"</p>
+                <p style="font-size:12px; color:#666; margin-top:10px;">Попробуйте изменить поисковый запрос</p>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function searchByAuthor(author) {
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) searchInput.value = author;
+    performSearch(author);
+}
+
+function clearSearch() {
+    isSearchMode = false;
+    currentSearchQuery = '';
+    renderFeed();
+}
+
 // ==================== ФАЙЛЫ ====================
 
 function openFeedFileSelector() {
@@ -189,10 +480,10 @@ function openFeedFileSelector() {
 }
 
 function handleFeedFiles(files) {
-    const MAX = 10 * 1024 * 1024;
+    const MAX = 50 * 1024 * 1024;
     for (let f of files) {
         if (f.size > MAX) {
-            alert('Файл слишком большой! Максимум 10MB');
+            alert('Файл слишком большой! Максимум 50MB');
             continue;
         }
         if (!feedPendingFiles.find(x => x.name === f.name && x.size === f.size)) {
@@ -208,7 +499,7 @@ function updateFeedFileList() {
     if (!container) return;
     container.innerHTML = feedPendingFiles.map((f, i) => `
         <div class="feed-creator-file">
-            📎 ${f.name.substring(0, 20)} (${(f.size/1024/1024).toFixed(2)} MB)
+            ${f.type.startsWith('video/') ? '🎬' : '📎'} ${f.name.substring(0, 20)} (${(f.size/1024/1024).toFixed(2)} MB)
             <span class="feed-creator-file-remove" onclick="removeFeedFile(${i})">✕</span>
         </div>
     `).join('');
@@ -236,37 +527,33 @@ async function submitFeedPost() {
         return;
     }
     
-    const filesData = [];
+    const fileIds = [];
     for (let file of feedPendingFiles) {
-        const data = await readFileAsBase64(file);
-        filesData.push({
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data: data
-        });
+        const fileId = await saveFileToDB(file);
+        fileIds.push(fileId);
     }
     
     const newPost = {
         id: Date.now(),
         text: text,
-        date: new Date(),
+        date: new Date().toISOString(),
         views: 0,
         viewedBy: [],
         author: currentUsername,
         avatar: '../png/portrait.png',
-        files: filesData
+        fileIds: fileIds,
+        files: []
     };
     
     publicPosts.unshift(newPost);
-    savePublicPosts();
+    await savePublicPosts();
     
     let wallPosts = JSON.parse(localStorage.getItem('epta_wall_posts') || '[]');
     wallPosts = wallPosts.map(p => ({...p, date: new Date(p.date), files: p.files || [], views: p.views || 0, viewedBy: p.viewedBy || []}));
-    wallPosts.unshift({...newPost, files: []});
+    wallPosts.unshift({...newPost, files: [], fileIds: []});
     const cleanWall = wallPosts.map(p => ({
         id: p.id, text: p.text, date: p.date, views: p.views, viewedBy: p.viewedBy,
-        author: p.author, avatar: p.avatar, files: []
+        author: p.author, avatar: p.avatar, files: [], fileIds: []
     }));
     localStorage.setItem('epta_wall_posts', JSON.stringify(cleanWall));
     
@@ -276,46 +563,38 @@ async function submitFeedPost() {
     
     applyCooldown();
     
-    refreshPublicPosts();
+    await loadPostsFromStorage();
     renderFeed();
     updateSidebar();
 }
 
-function readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
+async function savePublicPosts() {
+    const clean = publicPosts.map(p => ({
+        id: p.id, text: p.text, date: p.date, views: p.views, viewedBy: p.viewedBy,
+        author: p.author, avatar: p.avatar,
+        fileIds: p.fileIds || []
+    }));
+    localStorage.setItem('epta_public_posts', JSON.stringify(clean));
 }
 
-function renderPostFiles(files) {
-    if (!files || !files.length) return '';
+async function renderPostFiles(post) {
+    if (!post.fileIds || !post.fileIds.length) return '';
+    
     let html = '<div class="post-files">';
-    for (let i = 0; i < files.length; i++) {
-        const f = files[i];
-        if (f.data) {
-            if (f.type.startsWith('image/')) {
-                html += `<img src="${f.data}" class="post-file-image" onclick="window.open(this.src)">`;
-            } else if (f.type.startsWith('video/')) {
-                html += `<video src="${f.data}" class="post-file-video" controls></video>`;
+    for (let fileId of post.fileIds) {
+        const fileData = await getFileFromDB(fileId);
+        if (fileData && fileData.data) {
+            if (fileData.type.startsWith('image/')) {
+                html += `<img src="${fileData.data}" class="post-file-image" onclick="window.open(this.src)">`;
+            } else if (fileData.type.startsWith('video/')) {
+                html += `<video src="${fileData.data}" class="post-file-video" controls preload="metadata"></video>`;
             } else {
-                html += `<div class="post-file-other">📎 ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)</div>`;
+                html += `<div class="post-file-other">📎 ${fileData.name} (${(fileData.size/1024/1024).toFixed(2)} MB)</div>`;
             }
         }
     }
     html += '</div>';
     return html;
-}
-
-function savePublicPosts() {
-    const clean = publicPosts.map(p => ({
-        id: p.id, text: p.text, date: p.date, views: p.views, viewedBy: p.viewedBy,
-        author: p.author, avatar: p.avatar,
-        files: p.files || []
-    }));
-    localStorage.setItem('epta_public_posts', JSON.stringify(clean));
 }
 
 // ==================== ХЕШТЕГИ ====================
@@ -328,7 +607,6 @@ function extractHashtags(text) {
 }
 
 function calculateHashtagRank() {
-    refreshPublicPosts();
     const hashtagStats = {};
     
     publicPosts.forEach(post => {
@@ -358,7 +636,6 @@ function calculateHashtagRank() {
 }
 
 function calculateTopPosts() {
-    refreshPublicPosts();
     return [...publicPosts].map(post => ({
         ...post,
         totalScore: (Likes.getLikeCount(post.id) || 0) + 
@@ -368,46 +645,62 @@ function calculateTopPosts() {
     })).sort((a, b) => b.totalScore - a.totalScore).slice(0, 5);
 }
 
-function updateSidebar() {
+async function updateSidebar() {
     const hc = document.getElementById('topHashtags');
     if (hc) {
         const th = calculateHashtagRank();
         hc.innerHTML = th.length === 0 ? '<span style="color:#666;font-size:13px;">Пока нет хештегов</span>' : th.map(h => `<a href="#" class="hashtag" onclick="searchByHashtag('${h.tag.replace('#', '')}'); return false;">${h.tag} (${h.count})</a>`).join('');
     }
+    
     const tc = document.getElementById('topPosts');
     if (tc) {
         const tp = calculateTopPosts();
-        tc.innerHTML = tp.length === 0 ? '<div style="color:#666;font-size:13px;text-align:center;padding:20px;">Пока нет постов</div>' : tp.map((post, i) => `
-            <div class="popular-post-item" onclick="scrollToPost(${post.id})">
-                <div class="popular-post-rank">#${i + 1}</div>
-                <div class="popular-post-info">
-                    <div class="popular-post-text">${escapeHtml((post.text || '').substring(0, 50))}${post.text && post.text.length > 50 ? '...' : ''}</div>
-                    <div class="popular-post-stats">${post.totalScore} очков</div>
-                </div>
-            </div>
-        `).join('');
+        if (tp.length === 0) {
+            tc.innerHTML = '<div style="color:#666;font-size:13px;text-align:center;padding:20px;">Пока нет постов</div>';
+        } else {
+            let html = '';
+            for (let i = 0; i < tp.length; i++) {
+                const post = tp[i];
+                const filesHtml = await renderPostFiles(post);
+                html += `
+                    <div class="top-post-full" onclick="scrollToPost(${post.id})" style="margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid #333; cursor: pointer; transition: all 0.3s;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="font-size: 20px; font-weight: 800; color: #61DE2A; min-width: 35px;">#${i + 1}</div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 13px; color: #e0e0e0;">${escapeHtml(post.author || '@username')}</div>
+                                <div style="font-size: 10px; color: #666;">${formatDateTime(post.date)}</div>
+                            </div>
+                            <div style="margin-left: auto; font-size: 11px; color: #61DE2A;">${post.totalScore} очков</div>
+                        </div>
+                        ${post.text ? `<div style="font-size: 13px; color: #ccc; margin-bottom: 10px; line-height: 1.4;">${escapeHtml(post.text.substring(0, 100))}${post.text.length > 100 ? '...' : ''}</div>` : ''}
+                        ${filesHtml}
+                    </div>
+                `;
+            }
+            tc.innerHTML = html;
+        }
     }
 }
 
 function searchByHashtag(tag) {
     const searchInput = document.querySelector('.search-input');
     if (searchInput) searchInput.value = '#' + tag;
-    refreshPublicPosts();
-    const filtered = publicPosts.filter(post => {
-        const tags = extractHashtags(post.text || '');
-        return tags.some(t => t.toLowerCase() === '#' + tag.toLowerCase());
-    });
-    renderFilteredFeed(filtered);
+    performSearch('#' + tag);
 }
 
-function renderFilteredFeed(posts) {
+async function renderFilteredFeed(posts) {
     const container = document.getElementById('feedPosts');
     if (!container) return;
     if (!posts.length) {
         container.innerHTML = '<p style="text-align:center;padding:60px;color:#888;">Постов с этим хештегом не найдено</p>';
         return;
     }
-    container.innerHTML = posts.map(post => renderPostHTML(post)).join('');
+    
+    let html = '';
+    for (let post of posts) {
+        html += await renderPostHTML(post);
+    }
+    container.innerHTML = html;
     setTimeout(() => setupViewTracking(posts), 100);
 }
 
@@ -427,7 +720,7 @@ function scrollToPost(postId) {
 function sortFeedPosts(arr) {
     const sorted = [...arr];
     switch(currentFeedFilter) {
-        case 'date': return sorted.sort((a, b) => b.date - a.date);
+        case 'date': return sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
         case 'views': return sorted.sort((a, b) => (b.views||0) - (a.views||0));
         case 'reposts': return sorted.sort((a, b) => Reposts.getRepostCount(b.id) - Reposts.getRepostCount(a.id));
         case 'likes': return sorted.sort((a, b) => Likes.getLikeCount(b.id) - Likes.getLikeCount(a.id));
@@ -437,7 +730,8 @@ function sortFeedPosts(arr) {
 }
 
 function getPostsByTab() {
-    refreshPublicPosts();
+    if (isSearchMode) return [];
+    
     let posts = [...publicPosts];
     
     switch(currentFeedTab) {
@@ -447,8 +741,8 @@ function getPostsByTab() {
                 const scoreB = (Likes.getLikeCount(b.id) || 0) + (Comments.getCommentCount(b.id) || 0) + (Reposts.getRepostCount(b.id) || 0) + (b.views || 0);
                 const dateWeight = 0.3;
                 const scoreWeight = 0.7;
-                const dateA = a.date.getTime();
-                const dateB = b.date.getTime();
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
                 const maxDate = Math.max(dateA, dateB);
                 const normDateA = dateA / maxDate;
                 const normDateB = dateB / maxDate;
@@ -467,7 +761,7 @@ function getPostsByTab() {
             });
             break;
         case 'fresh':
-            posts.sort((a, b) => b.date - a.date);
+            posts.sort((a, b) => new Date(b.date) - new Date(a.date));
             break;
     }
     
@@ -485,24 +779,35 @@ function formatDateTime(date) {
     return `${dm} в ${time}`;
 }
 
-function renderPostHTML(post) {
+async function renderPostHTML(post) {
     const isLiked = Likes.hasLiked(post.id, currentUserId);
     const viewsCount = formatNumber(post.views || 0);
     const repostCount = formatNumber(Reposts.getRepostCount(post.id));
     const likeCount = formatNumber(Likes.getLikeCount(post.id));
     const commentCount = formatNumber(Comments.getCommentCount(post.id));
+    const filesHtml = await renderPostFiles(post);
+    
+    // Подсветка поискового запроса в тексте
+    let displayText = post.text || '';
+    if (isSearchMode && currentSearchQuery && displayText) {
+        const regex = new RegExp(`(${currentSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        displayText = displayText.replace(regex, '<mark style="background: #61DE2A; color: #000; padding: 0 2px; border-radius: 3px;">$1</mark>');
+    }
     
     return `
     <div class="feed-post" data-post-id="${post.id}">
         <div class="feed-post-header">
             <div class="feed-post-avatar"><img src="../png/portrait.png" alt=""></div>
             <div class="feed-post-info">
-                <div class="feed-post-author">${escapeHtml(post.author || '@username')}</div>
+                <div class="feed-post-author">${isSearchMode && currentSearchQuery && post.author && post.author.toLowerCase().includes(currentSearchQuery) ? 
+                    `<mark style="background: #61DE2A; color: #000; padding: 0 2px; border-radius: 3px;">${escapeHtml(post.author)}</mark>` : 
+                    escapeHtml(post.author || '@username')}
+                </div>
                 <div class="feed-post-date">${formatDateTime(post.date)}</div>
             </div>
         </div>
-        ${post.text ? `<div class="feed-post-text">${escapeHtml(post.text)}</div>` : ''}
-        ${renderPostFiles(post.files || [])}
+        ${displayText ? `<div class="feed-post-text">${displayText}</div>` : ''}
+        ${filesHtml}
         
         <div class="feed-post-actions">
             <div class="stat-view">
@@ -536,9 +841,11 @@ function incrementViews(postId) {
 
 let processedViews = new Set();
 
-function renderFeed() {
+async function renderFeed() {
     const container = document.getElementById('feedPosts');
     if (!container) return;
+    
+    if (isSearchMode) return;
     
     let posts = getPostsByTab();
     posts = sortFeedPosts(posts);
@@ -548,7 +855,11 @@ function renderFeed() {
         return;
     }
     
-    container.innerHTML = posts.map(post => renderPostHTML(post)).join('');
+    let html = '';
+    for (let post of posts) {
+        html += await renderPostHTML(post);
+    }
+    container.innerHTML = html;
     
     setTimeout(() => setupViewTracking(posts), 100);
 }
