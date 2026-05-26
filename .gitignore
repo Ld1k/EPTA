@@ -1,2 +1,6 @@
 .vscode
-server.js
+.nodude_modules/
+.claude
+.idea/
+enta_new/
+epta.json
