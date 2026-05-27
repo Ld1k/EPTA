@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #000000;
-            color: #e0ffe0;
+            color: #e0e0e0;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -36,12 +36,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.65);
             z-index: -1;
             pointer-events: none;
         }
 
-        /* Контейнер для падающих чисел */
         .falling-numbers {
             position: fixed;
             top: 0;
@@ -59,14 +58,12 @@
             font-weight: bold;
             pointer-events: none;
             animation: fallDown linear forwards;
-            text-shadow: 0 0 8px currentColor;
             font-family: monospace;
         }
 
-        /* Матричные неоновые оттенки только для 42 */
-        .falling-number:nth-child(3n+1) { color: #00ffcc; }
-        .falling-number:nth-child(3n+2) { color: #61DE2A; }
-        .falling-number:nth-child(3n+3) { color: #3BA51A; }
+        .falling-number:nth-child(3n+1) { color: #00ffcc; opacity: 0.3; }
+        .falling-number:nth-child(3n+2) { color: #61DE2A; opacity: 0.25; }
+        .falling-number:nth-child(3n+3) { color: #3BA51A; opacity: 0.2; }
 
         @keyframes fallDown {
             0% {
@@ -74,7 +71,7 @@
                 opacity: 0.3;
             }
             80% {
-                opacity: 0.15;
+                opacity: 0.1;
             }
             100% {
                 transform: translateY(105vh) rotate(360deg);
@@ -83,108 +80,81 @@
         }
 
         .header {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
             padding: 12px 0;
-            border-bottom: 2px solid #61DE2A;
-            position: relative;
+            border-bottom: 1px solid rgba(97, 222, 42, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
         }
 
         .header-inner {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            justify-content: space-between;
         }
 
         .logo {
             color: #61DE2A;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 16px;
-            border: 2px solid #61DE2A;
-            border-radius: 25px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #61DE2A;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .search-input::placeholder {
-            color: #444444;
-        }
-
-        .search-input:focus {
-            box-shadow: 0 0 15px rgba(97, 222, 42, 0.4);
+            letter-spacing: 2px;
         }
 
         .burger-menu {
             position: fixed;
-            top: 20px;
+            top: 12px;
             right: 20px;
             z-index: 1000;
         }
 
         .burger-icon {
-            width: 30px;
-            height: 24px;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            position: relative;
-            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            transition: all 0.3s;
+        }
+
+        .burger-icon:hover {
+            border-color: #61DE2A;
+            background: rgba(97, 222, 42, 0.1);
         }
 
         .burger-icon span {
-            display: block;
-            width: 100%;
-            height: 3px;
+            height: 2px;
             background: #61DE2A;
-            border-radius: 3px;
-            transition: transform 0.3s, opacity 0.3s;
-            transform-origin: left center;
-        }
-
-        .menu-panel.active ~ .burger-icon span:nth-child(1) {
-            transform: rotate(45deg) translate(2px, -2px);
-        }
-        .menu-panel.active ~ .burger-icon span:nth-child(2) {
-            opacity: 0;
-        }
-        .menu-panel.active ~ .burger-icon span:nth-child(3) {
-            transform: rotate(-45deg) translate(2px, 2px);
+            width: 22px;
+            transition: 0.3s;
         }
 
         .menu-panel {
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 300px;
+            right: -280px;
+            width: 280px;
             height: 100vh;
             background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px);
             border-left: 2px solid #61DE2A;
-            box-shadow: -5px 0 30px rgba(97, 222, 42, 0.3);
             transition: right 0.3s ease;
             z-index: 999;
-            overflow-y: auto;
+            padding-top: 70px;
         }
 
         .menu-panel.active {
@@ -192,84 +162,167 @@
         }
 
         .menu-content {
-            padding: 60px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
-            color: #cccccc;
+            gap: 14px;
+            padding: 14px 16px;
+            color: #e0e0e0;
             text-decoration: none;
-            font-size: 16px;
-            border-radius: 8px;
-            margin-bottom: 5px;
+            border-radius: 14px;
             transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 500;
         }
 
-        .menu-item:hover {
-            background: rgba(97, 222, 42, 0.1);
+        .menu-item:hover, .menu-item.active {
+            background: rgba(97, 222, 42, 0.12);
             color: #61DE2A;
         }
 
         .menu-icon {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
-            margin-right: 14px;
-            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .menu-item.active .menu-icon,
+        .menu-item:hover .menu-icon {
+            filter: brightness(0) saturate(100%) invert(74%) sepia(54%) saturate(1234%) hue-rotate(43deg) brightness(98%) contrast(91%);
         }
 
         .settings-container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 80px auto 20px;
+            padding: 0 16px;
             position: relative;
             z-index: 10;
         }
 
-        .settings-card {
-            background: rgba(0, 0, 0, 0.7);
+        .profile-header {
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            border: 2px solid #61DE2A;
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-
-        .settings-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #61DE2A;
-            margin-bottom: 25px;
+            border: 1px solid rgba(97, 222, 42, 0.2);
+            padding: 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 2px solid rgba(97, 222, 42, 0.3);
-            padding-bottom: 15px;
+            gap: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .profile-header:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(97, 222, 42, 0.4);
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(34, 34, 34, 0.95);
+            border: 2px solid #61DE2A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e0e0e0;
+            margin-bottom: 4px;
+        }
+
+        .profile-phone {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .profile-username {
+            font-size: 13px;
+            color: #61DE2A;
+        }
+
+        .profile-arrow {
+            color: #61DE2A;
+            font-size: 20px;
+            opacity: 0.6;
         }
 
         .settings-section {
-            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(97, 222, 42, 0.2);
+            margin-bottom: 16px;
+            overflow: hidden;
         }
 
-        .section-title {
-            font-size: 18px;
+        .section-header {
+            padding: 16px 20px;
+            font-size: 14px;
             font-weight: 600;
-            color: #e0e0e0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: #61DE2A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(97, 222, 42, 0.05);
+            border-bottom: 1px solid rgba(97, 222, 42, 0.1);
         }
 
         .setting-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            gap: 15px;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item:hover {
+            background: rgba(97, 222, 42, 0.05);
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .setting-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
         .setting-info {
@@ -279,186 +332,129 @@
         .setting-name {
             font-size: 16px;
             color: #e0e0e0;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
-        .setting-desc {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .test-sound-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .sound-test-btn {
-            padding: 12px 20px;
-            background: rgba(97, 222, 42, 0.1);
-            border: 1px solid #61DE2A;
-            border-radius: 25px;
+        .setting-value {
+            font-size: 13px;
             color: #61DE2A;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        }
+
+        .setting-right {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #888;
             font-size: 14px;
         }
 
-        .sound-test-btn:hover {
-            background: rgba(97, 222, 42, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(97, 222, 42, 0.3);
+        .setting-arrow {
+            font-size: 18px;
+            color: #61DE2A;
+            opacity: 0.5;
         }
 
-        .sound-test-btn:active {
-            transform: scale(0.95);
-        }
-
-        .volume-slider {
-            width: 150px;
-            height: 4px;
-            -webkit-appearance: none;
-            background: #333;
-            border-radius: 2px;
+        .language-selector {
+            background: transparent;
+            border: none;
+            color: #61DE2A;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
             outline: none;
         }
 
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #61DE2A;
-            cursor: pointer;
-            border: none;
+        .language-selector option {
+            background: #1a1a1a;
+            color: #e0e0e0;
         }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #61DE2A;
-            text-decoration: none;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background: rgba(97, 222, 42, 0.1);
-            border-radius: 25px;
-            transition: all 0.3s;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .back-link:hover {
-            background: rgba(97, 222, 42, 0.2);
-            transform: translateX(-5px);
-        }
-
-        .sound-status {
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(97, 222, 42, 0.1);
-            border-radius: 10px;
-            font-size: 12px;
-            color: #61DE2A;
-            text-align: center;
-            min-height: 36px;
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
         }
 
-        .btn {
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.98));
+            border: 2px solid #61DE2A;
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #61DE2A;
+            margin-bottom: 16px;
+        }
+
+        .modal-text {
+            color: #aaa;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .modal-btn {
             padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
+            background: rgba(97, 222, 42, 0.15);
+            border: 1px solid #61DE2A;
+            border-radius: 30px;
+            color: #61DE2A;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
         }
 
-        .btn-secondary {
-            background: rgba(0, 0, 0, 0.7);
-            color: #888888;
-            border: 1px solid #333333;
-        }
-
-        .toggle-switch {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .toggle-switch input[type="checkbox"] {
-            display: none;
-        }
-
-        .toggle-slider {
-            width: 44px;
-            height: 24px;
-            background: #333;
-            border-radius: 12px;
-            position: relative;
-            transition: all 0.3s;
-            border: 1px solid #555;
-        }
-
-        .toggle-slider::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #888;
-            top: 1px;
-            left: 1px;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch input:checked + .toggle-slider {
+        .modal-btn:hover {
             background: rgba(97, 222, 42, 0.3);
-            border-color: #61DE2A;
-        }
-
-        .toggle-switch input:checked + .toggle-slider::before {
-            background: #61DE2A;
-            left: 21px;
-            box-shadow: 0 0 8px rgba(97, 222, 42, 0.6);
-        }
-
-        .glass-btn {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(97, 222, 42, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .glass-btn:hover {
-            background: rgba(97, 222, 42, 0.15);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(97, 222, 42, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(97, 222, 42, 0.2);
-            transform: translateY(-2px);
         }
 
         @media (max-width: 768px) {
-            .settings-card { padding: 20px; }
-            .test-sound-buttons { gap: 8px; }
-            .sound-test-btn { padding: 8px 12px; font-size: 12px; }
-            .header-inner { gap: 10px; }
-            .logo { font-size: 22px; }
-            .menu-panel { width: 280px; right: -280px; }
-            .setting-item { flex-direction: column; align-items: flex-start; }
-            .volume-slider { width: 100%; margin-top: 10px; }
+            .settings-container {
+                margin-top: 70px;
+                padding: 0 12px;
+            }
+            .profile-header {
+                padding: 16px;
+            }
+            .profile-avatar {
+                width: 50px;
+                height: 50px;
+            }
+            .profile-name {
+                font-size: 16px;
+            }
+            .setting-item {
+                padding: 12px 16px;
+            }
+            .setting-icon {
+                width: 28px;
+                font-size: 18px;
+            }
+            .setting-name {
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -467,137 +463,192 @@
         <source src="../oboi/video.mp4" type="video/mp4">
     </video>
     <div class="video-overlay"></div>
-
     <div class="falling-numbers" id="fallingNumbers"></div>
 
     <div class="burger-menu" id="burgerMenu">
+        <div class="burger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         <div class="menu-panel" id="menuPanel">
             <div class="menu-content">
                 <a href="../lenta/feed.html" class="menu-item">
                     <img src="../png/grid.png" class="menu-icon" alt=""> Лента
                 </a>
-                <a href="../profile/index.html" class="menu-item">
+                <a href="../you/index.html" class="menu-item">
                     <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
                 </a>
-                <a href="settings.html" class="menu-item" style="background: rgba(97, 222, 42, 0.15); color: #61DE2A;">
+                <a href="settings.html" class="menu-item active">
                     <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
                 </a>
                 <a href="../sms/sms.html" class="menu-item">
                     <img src="../png/comment.png" class="menu-icon" alt=""> Чаты
                 </a>
+                <a href="../support/support.html" class="menu-item">
+                    <img src="../png/portrait.png" class="menu-icon" alt=""> Поддержка
+                </a>
             </div>
-        </div>
-        <div class="burger-icon" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
         </div>
     </div>
 
     <header class="header">
         <div class="header-inner">
             <a href="../lenta/feed.html" class="logo">ЕПТА</a>
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Поиск...">
-            </div>
         </div>
     </header>
 
     <div class="settings-container">
-        <div class="back-link" onclick="goBack()">
-            ← Назад
+        <!-- Профиль -->
+        <div class="profile-header" onclick="showComingSoon('Редактирование профиля')">
+            <div class="profile-avatar">
+                <img src="../png/portrait.png" alt="" id="profileAvatar">
+            </div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Киршик</div>
+                <div class="profile-phone" id="profilePhone">5562516457</div>
+                <div class="profile-username" id="profileUsername">@lirikalp</div>
+            </div>
+            <div class="profile-arrow">›</div>
         </div>
 
-        <div class="settings-card">
-            <div class="settings-title">
-                ⚙️ Настройки ЕПТА
-            </div>
-
-            <div class="settings-section">
-                <div class="section-title">
-                    🔊 Звуки ЕПТА
-                </div>
-                
-                <div class="setting-item">
+        <!-- ОСНОВНОЕ -->
+        <div class="settings-section">
+            <div class="section-header">ОСНОВНОЕ</div>
+            
+            <div class="setting-item" onclick="showComingSoon('ЕПТА Премиум')">
+                <div class="setting-left">
+                    <div class="setting-icon">⭐</div>
                     <div class="setting-info">
-                        <div class="setting-name">Звуковые эффекты</div>
-                        <div class="setting-desc">Вкл/Выкл звуки интерфейса</div>
+                        <div class="setting-name">ЕПТА Премиум</div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="soundToggle" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <div class="setting-name">Громкость ЕПТА</div>
-                        <div class="setting-desc">Настройка громкости (0-100%)</div>
-                    </div>
-                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="30">
-                </div>
-
-                <div class="test-sound-buttons">
-                    <button class="sound-test-btn" data-sound="click">🖱 Клик (Вкл)</button>
-                    <button class="sound-test-btn" data-sound="click_off">🖱 Клик (Выкл)</button>
-                    <button class="sound-test-btn" data-sound="success">🎉 Успех</button>
-                    <button class="sound-test-btn" data-sound="error">❌ Ошибка</button>
-                    <button class="sound-test-btn" data-sound="chime">🔔 Дверной сигнал</button>
-                    <button class="sound-test-btn" data-sound="timer">⏳ Таймер</button>
-                </div>
-
-                <div class="sound-status" id="soundStatus">
-                    🎵 Портал-аудиосистема готова. Нажми кнопку для проверки!
+                <div class="setting-right">
+                    <span class="setting-value">Купить</span>
+                    <span class="setting-arrow">›</span>
                 </div>
             </div>
 
-            <div class="settings-section">
-                <div class="section-title">
-                    👤 ЕПТА Профиль
-                </div>
-                
-                <div class="setting-item">
+            <div class="setting-item" onclick="showComingSoon('Мой аккаунт')">
+                <div class="setting-left">
+                    <div class="setting-icon">👤</div>
                     <div class="setting-info">
-                        <div class="setting-name">Аккаунт ЕПТА</div>
-                        <div class="setting-desc">Управление аккаунтом</div>
+                        <div class="setting-name">Мой аккаунт</div>
                     </div>
-                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Функция в разработке!')">
-                        Управление
-                    </button>
                 </div>
+                <div class="setting-right">
+                    <span class="setting-arrow">›</span>
+                </div>
+            </div>
 
-                <div class="setting-item">
+            <div class="setting-item" onclick="showComingSoon('Конфиденциальность')">
+                <div class="setting-left">
+                    <div class="setting-icon">🔒</div>
                     <div class="setting-info">
-                        <div class="setting-name">Приватность ЕПТА</div>
-                        <div class="setting-desc">Настройки конфиденциальности</div>
+                        <div class="setting-name">Конфиденциальность</div>
                     </div>
-                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Функция в разработке!')">
-                        Настроить
-                    </button>
                 </div>
+                <div class="setting-right">
+                    <span class="setting-arrow">›</span>
+                </div>
+            </div>
+        </div>
 
-                <div class="setting-item">
+        <!-- ЧАТЫ -->
+        <div class="settings-section">
+            <div class="section-header">ЧАТЫ</div>
+            
+            <div class="setting-item" onclick="showComingSoon('Настройки чатов')">
+                <div class="setting-left">
+                    <div class="setting-icon">💬</div>
                     <div class="setting-info">
-                        <div class="setting-name">Тема ЕПТА</div>
-                        <div class="setting-desc">Стиль оформления</div>
+                        <div class="setting-name">Настройки чатов</div>
                     </div>
-                    <button class="btn btn-secondary glass-btn" onclick="alert('ЕПТА: Скоро будут темы!')">
-                        Тёмная ЕПТА
-                    </button>
+                </div>
+                <div class="setting-right">
+                    <span class="setting-arrow">›</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- МЕДИА И ЯЗЫК -->
+        <div class="settings-section">
+            <div class="section-header">МЕДИА И ЯЗЫК</div>
+            
+            <div class="setting-item">
+                <div class="setting-left">
+                    <div class="setting-icon">🌐</div>
+                    <div class="setting-info">
+                        <div class="setting-name">Язык</div>
+                    </div>
+                </div>
+                <div class="setting-right">
+                    <select class="language-selector" id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="ru" selected>Русский</option>
+                        <option value="en">English</option>
+                        <option value="kk">Қазақша</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ДРУГОЕ -->
+        <div class="settings-section">
+            <div class="section-header">ДРУГОЕ</div>
+            
+            <div class="setting-item" onclick="showComingSoon('Масштаб по умолчанию')">
+                <div class="setting-left">
+                    <div class="setting-icon">🔍</div>
+                    <div class="setting-info">
+                        <div class="setting-name">Масштаб по умолчанию</div>
+                    </div>
+                </div>
+                <div class="setting-right">
+                    <span class="setting-value">100%</span>
+                    <span class="setting-arrow">›</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        let statusTimeout;
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title" id="modalTitle">В разработке</div>
+            <div class="modal-text" id="modalText">Эта функция будет доступна в следующем обновлении ЕПТА 42</div>
+            <button class="modal-btn" onclick="closeModal()">Понятно</button>
+        </div>
+    </div>
 
-        function goBack() {
-            if (document.referrer && document.referrer.includes(window.location.host)) {
-                window.history.back();
-            } else {
-                window.location.href = 'index.html';
-            }
+    <script>
+        function loadProfile() {
+            const savedName = localStorage.getItem('epta_username') || 'Киршик';
+            const savedPhone = localStorage.getItem('epta_phone') || '5562516457';
+            const savedUsername = localStorage.getItem('epta_user_tag') || '@lirikalp';
+            
+            document.getElementById('profileName').textContent = savedName;
+            document.getElementById('profilePhone').textContent = savedPhone;
+            document.getElementById('profileUsername').textContent = savedUsername;
+        }
+
+        function changeLanguage(lang) {
+            localStorage.setItem('epta_language', lang);
+            showComingSoon(`Язык изменён на ${lang === 'ru' ? 'Русский' : lang === 'en' ? 'English' : 'Қазақша'}`);
+        }
+
+        function showComingSoon(feature) {
+            const modal = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const text = document.getElementById('modalText');
+            
+            title.textContent = feature;
+            text.textContent = 'Эта функция будет доступна в следующем обновлении ЕПТА 42';
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.classList.remove('active');
         }
 
         function toggleMenu() {
@@ -609,7 +660,13 @@
             const menu = document.getElementById('burgerMenu');
             const panel = document.getElementById('menuPanel');
             if (menu && panel && !menu.contains(e.target) && panel.classList.contains('active')) {
-                toggleMenu();
+                panel.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
             }
         });
 
@@ -618,146 +675,25 @@
             if (!container) return;
             
             function spawnNumber() {
-                if (container.children.length > 35) return;
-
+                if (container.children.length > 40) return;
                 const number = document.createElement('div');
                 number.className = 'falling-number';
                 number.textContent = '42';
-                
-                const size = Math.random() * 16 + 18;
+                const size = Math.random() * 14 + 12;
                 const left = Math.random() * 100;
-                const duration = Math.random() * 6 + 6;
-                const delay = Math.random() * 2;
-                
-                number.style.cssText = `
-                    left: ${left}%;
-                    font-size: ${size}px;
-                    animation-duration: ${duration}s;
-                    animation-delay: ${delay}s;
-                `;
-                
+                const duration = Math.random() * 8 + 5;
+                const delay = Math.random() * 3;
+                number.style.cssText = `left: ${left}%; font-size: ${size}px; animation-duration: ${duration}s; animation-delay: ${delay}s;`;
                 container.appendChild(number);
-                
-                setTimeout(() => {
-                    number.remove();
-                }, (duration + delay) * 1000);
+                setTimeout(() => number.remove(), (duration + delay) * 1000);
             }
             
-            for (let i = 0; i < 12; i++) {
-                setTimeout(spawnNumber, i * 250);
-            }
-            
-            setInterval(spawnNumber, 700);
+            for (let i = 0; i < 15; i++) setTimeout(spawnNumber, i * 150);
+            setInterval(() => { if (container.children.length < 35) spawnNumber(); }, 800);
         }
 
         createFallingNumbers();
-
-        const SoundSystem = {
-            enabled: true,
-            volume: 0.3,
-            audioCache: {},
-            
-            soundFiles: {
-                click: '../sounds_portal2/ding_on.wav',
-                click_off: '../sounds_portal2/ding_off.wav',
-                success: '../sounds_portal2/button_synth_positive_01.wav',
-                error: '../sounds_portal2/button_synth_negative_02.wav',
-                chime: '../sounds_portal2/door_open_chime_01.wav',
-                timer: '../sounds_portal2/potato_timer_01.wav'
-            },
-            
-            init: function() {
-                const savedEnabled = localStorage.getItem('epta_sound_enabled');
-                const savedVolume = localStorage.getItem('epta_sound_volume');
-                if (savedEnabled !== null) this.enabled = savedEnabled === 'true';
-                if (savedVolume !== null) this.volume = parseFloat(savedVolume);
-
-                for (let key in this.soundFiles) {
-                    this.audioCache[key] = new Audio(this.soundFiles[key]);
-                    this.audioCache[key].preload = 'auto';
-                }
-                
-                this.updateUI();
-            },
-            
-            play: function(soundName) {
-                if (!this.enabled) return;
-                
-                const audio = this.audioCache[soundName];
-                if (audio) {
-                    audio.currentTime = 0; 
-                    audio.volume = this.volume;
-                    audio.play().catch(err => {
-                        console.warn(`Браузер ожидает клика для воспроизведения звука "${soundName}".`);
-                    });
-                }
-            },
-            
-            setEnabled: function(enabled) {
-                this.enabled = enabled;
-                localStorage.setItem('epta_sound_enabled', enabled);
-                this.updateUI();
-            },
-            
-            setVolume: function(volume) {
-                this.volume = volume;
-                localStorage.setItem('epta_sound_volume', volume);
-                for (let key in this.audioCache) {
-                    this.audioCache[key].volume = volume;
-                }
-            },
-            
-            updateUI: function() {
-                const toggle = document.getElementById('soundToggle');
-                const slider = document.getElementById('volumeSlider');
-                if (toggle) toggle.checked = this.enabled;
-                if (slider) slider.value = this.volume * 100;
-            }
-        };
-
-        window.SoundSystem = SoundSystem;
-        window.Sounds = SoundSystem;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            SoundSystem.init();
-            
-            const soundToggle = document.getElementById('soundToggle');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const statusDiv = document.getElementById('soundStatus');
-            
-            if (soundToggle) {
-                soundToggle.addEventListener('change', function(e) {
-                    SoundSystem.setEnabled(e.target.checked);
-                    if (statusDiv) {
-                        statusDiv.innerHTML = e.target.checked ? '🔊 Звуки ЕПТА активированы' : '🔇 Звук полностью отключен';
-                    }
-                });
-            }
-            
-            if (volumeSlider) {
-                volumeSlider.addEventListener('input', function(e) {
-                    const volValue = e.target.value;
-                    SoundSystem.setVolume(volValue / 100);
-                    if (statusDiv) statusDiv.innerHTML = `🔊 Громкость: ${volValue}%`;
-                    
-                    clearTimeout(statusTimeout);
-                    statusTimeout = setTimeout(() => {
-                        if (statusDiv) {
-                            statusDiv.innerHTML = soundToggle && !soundToggle.checked ? '🔇 Звук полностью отключен' : '🎵 Звуки активны!';
-                        }
-                    }, 1200);
-                });
-            }
-            
-            document.querySelectorAll('.sound-test-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const soundName = this.dataset.sound;
-                    if (soundName) {
-                        SoundSystem.play(soundName);
-                    }
-                });
-            });
-        });
+        loadProfile();
     </script>
 </body>
 </html>
