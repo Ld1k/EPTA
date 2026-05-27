@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ЕПТА - Сообщения</title>
-    <link rel="stylesheet" href="../you/style.css">
     <style>
         * {
             margin: 0;
@@ -61,7 +60,6 @@
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* ХЕДЕР - логотип по центру, меню справа */
         .header {
             position: fixed;
             top: 0;
@@ -91,7 +89,6 @@
             letter-spacing: 2px;
         }
 
-        /* БУРГЕР МЕНЮ - СПРАВА */
         .burger-menu {
             position: fixed;
             top: 12px;
@@ -181,7 +178,6 @@
             filter: brightness(0) saturate(100%) invert(74%) sepia(54%) saturate(1234%) hue-rotate(43deg) brightness(98%) contrast(91%);
         }
 
-        /* Контейнер чатов */
         .sms-container {
             max-width: 1400px;
             margin: 80px auto 20px;
@@ -267,7 +263,7 @@
 
         .chat-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 14px;
             padding: 14px;
             margin-bottom: 8px;
@@ -299,8 +295,8 @@
             justify-content: center;
             flex-shrink: 0;
             overflow: hidden;
-            cursor: pointer;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .chat-avatar-small:hover {
@@ -320,6 +316,7 @@
         .chat-info {
             flex: 1;
             min-width: 0;
+            overflow: hidden;
         }
 
         .chat-info .chat-name {
@@ -328,6 +325,13 @@
             color: #e0e0e0;
             margin-bottom: 5px;
             cursor: pointer;
+            word-break: break-word;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            line-height: 1.3;
+            display: block;
+            max-width: 100%;
         }
 
         .chat-last-message {
@@ -343,6 +347,7 @@
             color: #666;
             flex-shrink: 0;
             text-align: right;
+            white-space: nowrap;
         }
 
         .unread-badge {
@@ -378,6 +383,8 @@
             align-items: center;
             gap: 14px;
             cursor: pointer;
+            min-width: 0;
+            flex: 1;
         }
 
         .chat-avatar {
@@ -391,6 +398,7 @@
             justify-content: center;
             overflow: hidden;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .chat-avatar:hover {
@@ -406,12 +414,18 @@
 
         .chat-details {
             flex: 1;
+            min-width: 0;
         }
 
         .chat-details .chat-name {
             font-weight: 800;
             font-size: 18px;
             color: #e0e0e0;
+            word-break: break-word;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            line-height: 1.3;
         }
 
         .chat-status {
@@ -705,6 +719,7 @@
             font-weight: 800;
             color: #e0e0e0;
             margin-bottom: 6px;
+            word-break: break-word;
         }
 
         .profile-card-username {
@@ -730,8 +745,6 @@
             padding: 14px;
             background: rgba(255, 255, 255, 0.04);
             border-radius: 18px;
-            max-height: 320px;
-            overflow-y: auto;
         }
 
         .profile-card-detail {
@@ -1125,6 +1138,14 @@
                 text-align: left;
                 max-width: 100%;
             }
+
+            .chat-details .chat-name {
+                font-size: 16px;
+            }
+            
+            .chat-info .chat-name {
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1158,6 +1179,14 @@
                 height: 38px;
                 font-size: 18px;
             }
+
+            .chat-info .chat-name {
+                font-size: 13px;
+            }
+
+            .chat-details .chat-name {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -1168,7 +1197,6 @@
     <div class="video-overlay"></div>
     <div class="falling-numbers" id="fallingNumbers"></div>
 
-    <!-- БУРГЕР МЕНЮ - СПРАВА -->
     <div class="burger-menu" id="burgerMenu">
         <div class="burger-icon" onclick="toggleMenu()">
             <span></span>
@@ -1183,7 +1211,7 @@
                 <a href="../you/index.html" class="menu-item">
                     <img src="../png/portrait.png" class="menu-icon" alt=""> Профиль
                 </a>
-                <a href="#" class="menu-item">
+                <a href="../you/settings.html" class="menu-item">
                     <img src="../png/sun.png" class="menu-icon" alt=""> Настройки
                 </a>
                 <a href="sms.html" class="menu-item active">
@@ -1193,7 +1221,6 @@
         </div>
     </div>
 
-    <!-- ХЕДЕР - ЛОГОТИП ПО ЦЕНТРУ -->
     <header class="header">
         <div class="header-inner">
             <a href="../you/index.html" class="logo">ЕПТА</a>
@@ -1251,7 +1278,24 @@
                     <div class="profile-card-name" id="profileName">@username</div>
                     <div class="profile-card-username" id="profileUsername">@username</div>
                     <div class="profile-card-status" id="profileStatus">Онлайн</div>
-                    <div class="profile-card-details" id="profileDetails"></div>
+                    <div class="profile-card-details" id="profileDetails">
+                        <div class="profile-card-detail">
+                            <span class="profile-card-detail-label">Город:</span>
+                            <span class="profile-card-detail-value" id="profileCity">---</span>
+                        </div>
+                        <div class="profile-card-detail">
+                            <span class="profile-card-detail-label">Возраст:</span>
+                            <span class="profile-card-detail-value" id="profileAge">---</span>
+                        </div>
+                        <div class="profile-card-detail">
+                            <span class="profile-card-detail-label">Пол:</span>
+                            <span class="profile-card-detail-value" id="profileGender">---</span>
+                        </div>
+                        <div class="profile-card-detail">
+                            <span class="profile-card-detail-label">Сквад:</span>
+                            <span class="profile-card-detail-value" id="profileSquad">---</span>
+                        </div>
+                    </div>
                     <button class="profile-card-btn" id="profileOpenBtn">
                         <img src="../png/portrait.png" class="icon-18" alt=""> Открыть страницу
                     </button>
@@ -1379,15 +1423,13 @@
             const sorted = [...chats].sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
             
             container.innerHTML = sorted.map(chat => {
-                const userId = chat.type === 'personal' ? chat.participants.find(p => p !== 'current') : null;
                 return `
                 <div class="chat-item ${currentChatId === chat.id ? 'active' : ''}" onclick="selectChat('${chat.id}')">
-                    <div class="chat-avatar-small ${chat.type === 'group' ? 'group' : ''}" 
-                         onclick="event.stopPropagation(); ${chat.type === 'group' ? `openGroupProfile('${chat.id}')` : (userId ? `openProfileOverlay('${userId}', '${chat.id}')` : 'null')}">
+                    <div class="chat-avatar-small ${chat.type === 'group' ? 'group' : ''}">
                         <img src="${chat.avatar}" alt="" onerror="this.src='../png/portrait.png'">
                     </div>
                     <div class="chat-info">
-                        <div class="chat-name" onclick="event.stopPropagation(); ${chat.type === 'group' ? `openGroupProfile('${chat.id}')` : (userId ? `openProfileOverlay('${userId}', '${chat.id}')` : 'null')}">
+                        <div class="chat-name">
                             ${escapeHtml(chat.name)}
                         </div>
                         <div class="chat-last-message">${escapeHtml(chat.lastMessage || 'Новое сообщение')}</div>
@@ -1414,7 +1456,9 @@
             const chatName = document.getElementById('chatName');
             const chatStatus = document.getElementById('chatStatus');
             const chatHeaderInfo = document.getElementById('chatHeaderInfo');
+            const chatAvatarImg = document.querySelector('#chatHeaderInfo .chat-avatar img');
             
+            if (chatAvatarImg) chatAvatarImg.src = chat.avatar;
             chatName.textContent = chat.name;
             if (chat.type === 'group') {
                 chatStatus.textContent = `${chat.participants.length} участников`;
@@ -1799,27 +1843,27 @@
             const nameEl = document.getElementById('profileName');
             const usernameEl = document.getElementById('profileUsername');
             const statusEl = document.getElementById('profileStatus');
-            const detailsContainer = document.getElementById('profileDetails');
-            const openBtn = document.getElementById('profileOpenBtn');
+            const cityEl = document.getElementById('profileCity');
+            const ageEl = document.getElementById('profileAge');
+            const genderEl = document.getElementById('profileGender');
+            const squadEl = document.getElementById('profileSquad');
             
             if (avatarEl) avatarEl.src = chat?.avatar || userData.avatar || '../png/portrait.png';
             if (bgImgEl) bgImgEl.src = chat?.avatar || userData.avatar || '../png/portrait.png';
-            if (nameEl) nameEl.textContent = userData.name;
-            if (usernameEl) usernameEl.textContent = userData.username;
+            if (nameEl) nameEl.textContent = userData.name || 'Пользователь';
+            if (usernameEl) usernameEl.textContent = userData.username || '@username';
             if (statusEl) statusEl.textContent = userData.status === 'online' ? '🟢 Онлайн' : (userData.status === 'offline' ? '⚫ Не в сети' : '👥 Группа');
+            if (cityEl) cityEl.textContent = userData.city || 'Не указан';
+            if (ageEl) ageEl.textContent = userData.age || '—';
+            if (genderEl) genderEl.textContent = userData.gender || '—';
+            if (squadEl) squadEl.textContent = userData.squad || '—';
             
-            if (detailsContainer) {
-                detailsContainer.innerHTML = `
-                    <div class="profile-card-detail"><span class="profile-card-detail-label">Город:</span><span class="profile-card-detail-value">${userData.city}</span></div>
-                    <div class="profile-card-detail"><span class="profile-card-detail-label">Возраст:</span><span class="profile-card-detail-value">${userData.age}</span></div>
-                    <div class="profile-card-detail"><span class="profile-card-detail-label">Пол:</span><span class="profile-card-detail-value">${userData.gender}</span></div>
-                    <div class="profile-card-detail"><span class="profile-card-detail-label">Сквад:</span><span class="profile-card-detail-value">${userData.squad}</span></div>
-                `;
-            }
-            
+            const openBtn = document.getElementById('profileOpenBtn');
             if (openBtn) {
                 openBtn.innerHTML = '<img src="../png/portrait.png" class="icon-18" alt=""> Открыть страницу';
-                openBtn.onclick = () => window.location.href = `../you/index.html?user=${userId}`;
+                openBtn.onclick = () => {
+                    window.location.href = `../you/index.html?user=${userId}`;
+                };
             }
             
             const overlay = document.getElementById('profileOverlay');
