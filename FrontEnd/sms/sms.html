@@ -197,6 +197,54 @@
             overflow: hidden;
             height: calc(100vh - 100px);
             min-height: 550px;
+            position: relative;
+        }
+
+        .sms-grid.has-chat-wallpaper {
+            background: transparent;
+            backdrop-filter: none;
+        }
+
+        .chat-wallpaper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            /* Убрана прозрачность */
+        }
+
+        .chat-wallpaper-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            /* Убрана прозрачность */
+        }
+
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+            position: relative;
+            z-index: 1;
         }
 
         .chats-list {
@@ -272,6 +320,21 @@
             transition: all 0.3s;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid transparent;
+            position: relative;
+        }
+
+        .chat-item.blocked {
+            opacity: 0.6;
+            filter: grayscale(0.3);
+        }
+
+        .chat-item.blocked::after {
+            content: "🔒";
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 12px;
+            color: #ff4444;
         }
 
         .chat-item:hover {
@@ -361,13 +424,6 @@
             margin-top: 5px;
         }
 
-        .chat-area {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
         .chat-header {
             padding: 16px 24px;
             border-bottom: 1px solid rgba(97, 222, 42, 0.3);
@@ -376,6 +432,8 @@
             align-items: center;
             flex-shrink: 0;
             background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
         }
 
         .chat-header-info {
@@ -433,47 +491,86 @@
             color: #61DE2A;
         }
 
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 24px;
+        .chat-header-actions {
             display: flex;
-            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-action-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(97, 222, 42, 0.1);
+            border: 1px solid rgba(97, 222, 42, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .chat-action-btn:hover {
+            background: rgba(97, 222, 42, 0.25);
+            border-color: #61DE2A;
+            transform: scale(1.05);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #61DE2A;
+            border-radius: 12px;
+            padding: 8px 0;
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
             gap: 12px;
-            min-height: 0;
+            padding: 12px 16px;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .chat-messages::-webkit-scrollbar {
-            width: 5px;
+        .dropdown-menu a:hover {
+            background: rgba(97, 222, 42, 0.15);
+            color: #61DE2A;
         }
 
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
+        .dropdown-menu a.danger {
+            color: #ff5555;
         }
 
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #61DE2A;
-            border-radius: 3px;
-        }
-
-        .empty-chat {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-chat img {
-            width: 64px;
-            height: 64px;
-            opacity: 0.3;
-            margin-bottom: 16px;
+        .dropdown-menu a.danger:hover {
+            background: rgba(255, 85, 85, 0.15);
+            color: #ff5555;
         }
 
         .message {
             display: flex;
             flex-direction: column;
             max-width: 70%;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .message.no-copy {
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .message.outgoing {
@@ -487,7 +584,7 @@
         .message-bubble {
             padding: 10px 16px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(97, 222, 42, 0.2);
             font-size: 14px;
             line-height: 1.45;
@@ -524,6 +621,8 @@
             gap: 12px;
             background: rgba(0, 0, 0, 0.3);
             flex-shrink: 0;
+            position: relative;
+            z-index: 2;
         }
 
         .chat-input-wrapper textarea {
@@ -546,6 +645,11 @@
             box-shadow: 0 0 12px rgba(97, 222, 42, 0.2);
         }
 
+        .chat-input-wrapper textarea:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .send-btn {
             width: 46px;
             height: 46px;
@@ -565,9 +669,71 @@
             transform: scale(1.03);
         }
 
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .send-btn img {
             width: 20px;
             height: 20px;
+        }
+
+        .wallpaper-selector {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #61DE2A;
+            border-radius: 16px;
+            padding: 12px;
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 180px;
+        }
+
+        .wallpaper-selector.active {
+            display: flex;
+        }
+
+        .wallpaper-option {
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e0e0e0;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wallpaper-option:hover {
+            background: rgba(97, 222, 42, 0.15);
+            color: #61DE2A;
+        }
+
+        .wallpaper-option.premium {
+            position: relative;
+        }
+
+        .premium-badge {
+            font-size: 10px;
+            background: rgba(97, 222, 42, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: #61DE2A;
+        }
+
+        .wallpaper-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-size: cover;
+            border: 1px solid rgba(97, 222, 42, 0.3);
         }
 
         .profile-overlay {
@@ -593,13 +759,11 @@
         }
 
         .cards-container {
-            perspective: 1200px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: grab;
+            display: inline-block;
+            width: auto;
             position: relative;
+            perspective: 1200px;
+            cursor: grab;
         }
 
         .cards-container:active {
@@ -620,6 +784,7 @@
             transform-style: preserve-3d;
             transition: box-shadow 0.2s ease, transform 0.05s linear;
             will-change: transform;
+            margin: 0;
         }
 
         .profile-card-3d.animate-in {
@@ -1048,6 +1213,27 @@
             height: 18px;
         }
 
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #61DE2A;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: #61DE2A;
+            font-size: 14px;
+            z-index: 5000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+        }
+
         @media (max-width: 900px) {
             .sms-grid {
                 grid-template-columns: 300px 1fr;
@@ -1228,7 +1414,7 @@
     </header>
 
     <div class="sms-container">
-        <div class="sms-grid">
+        <div class="sms-grid" id="smsGrid">
             <div class="chats-list" id="chatsList">
                 <div class="chats-header">
                     <span>Чаты</span>
@@ -1251,8 +1437,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="chat-header-actions">
+                        <button class="chat-action-btn" onclick="toggleChatMenu()">⋮</button>
+                    </div>
+                    <div class="dropdown-menu" id="chatDropdownMenu">
+                        <a onclick="exportChat()">📤 Экспорт чата</a>
+                        <a onclick="openWallpaperSelector()">🖼️ Сменить обои</a>
+                        <a onclick="toggleBlockChat()" id="blockChatBtn">🔒 Заблокировать</a>
+                        <a onclick="toggleCopyProtection()" id="copyProtectionBtn">📋 Запретить копирование</a>
+                        <a onclick="deleteChat()" class="danger">🗑️ Удалить чат</a>
+                    </div>
                 </div>
-                <div class="chat-messages" id="chatMessages">
+                <div class="chat-messages" id="chatMessages" oncopy="return checkCopyAllowed()" oncut="return false" oncontextmenu="return checkContextMenu()">
                     <div class="empty-chat">
                         <img src="../png/comment.png" alt="">
                         <p>Выберите чат, чтобы начать общение</p>
@@ -1265,6 +1461,25 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="wallpaper-selector" id="wallpaperSelector">
+        <div class="wallpaper-option" onclick="setChatWallpaper(null)">
+            <span>🌙 По умолчанию</span>
+        </div>
+        <div class="wallpaper-option" onclick="setChatWallpaper('default1')">
+            <span>🎨 Тёмный градиент</span>
+        </div>
+        <div class="wallpaper-option" onclick="setChatWallpaper('default2')">
+            <span>🎨 Светлый градиент</span>
+        </div>
+        <div class="wallpaper-option" onclick="uploadPhotoWallpaper()">
+            <span>📷 Фото из галереи</span>
+        </div>
+        <div class="wallpaper-option premium" onclick="uploadVideoWallpaper()">
+            <span>🎬 Видео обои</span>
+            <span class="premium-badge">Premium</span>
         </div>
     </div>
 
@@ -1321,10 +1536,35 @@
         </div>
     </div>
 
+    <div class="toast-notification" id="toastNotification">Уведомление</div>
+
+    <input type="file" id="photoUploadInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+    <input type="file" id="videoUploadInput" accept="video/*" style="display: none;" onchange="handleVideoUpload(event)">
+
     <script>
+        // ========== ФУНКЦИЯ ОТКРЫТИЯ TELEGRAM БОТА ==========
+        function openTelegramBot() {
+            window.open('https://t.me/epta42_bot', '_blank');
+        }
+
+        // ========== ДАННЫЕ ==========
         let chats = [];
         let messages = {};
         let currentChatId = null;
+        let isCopyProtectionEnabled = false;
+        let chatBlockedStatus = {};
+
+        // Обои чатов: null - по умолчанию, 'default1', 'default2', фото: {type:'photo', url:'...'}, видео: {type:'video', url:'...'}
+        let chatWallpapers = {};
+
+        // Текущие медиа обои
+        let currentWallpaperElement = null;
+
+        // Подписка пользователя (для демо всегда false, но при клике на премиум открывается бот)
+        let userSubscription = {
+            isPremium: localStorage.getItem('epta_premium') === 'true' || false,
+            expiresAt: localStorage.getItem('epta_premium_expires') || null
+        };
 
         const currentUserId = localStorage.getItem('epta_user_id') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('epta_user_id', currentUserId);
@@ -1361,8 +1601,9 @@
             }
         };
 
+        // ========== ЗАГРУЗКА/СОХРАНЕНИЕ ==========
         function loadData() {
-            const saved = localStorage.getItem('epta_sms_chats');
+            const saved = localStorage.getItem('epta_sms_chats_v2');
             if (saved) {
                 chats = JSON.parse(saved);
             } else {
@@ -1373,7 +1614,7 @@
                 ];
             }
             
-            const savedMessages = localStorage.getItem('epta_sms_messages');
+            const savedMessages = localStorage.getItem('epta_sms_messages_v2');
             if (savedMessages) {
                 messages = JSON.parse(savedMessages);
             } else {
@@ -1394,13 +1635,32 @@
                     ]
                 };
             }
+            
+            const savedBlocked = localStorage.getItem('epta_blocked_chats');
+            if (savedBlocked) {
+                chatBlockedStatus = JSON.parse(savedBlocked);
+            }
+            
+            const savedWallpapers = localStorage.getItem('epta_chat_wallpapers_v2');
+            if (savedWallpapers) {
+                chatWallpapers = JSON.parse(savedWallpapers);
+            }
+            
+            const savedCopyProtection = localStorage.getItem('epta_copy_protection');
+            if (savedCopyProtection) {
+                isCopyProtectionEnabled = savedCopyProtection === 'true';
+            }
         }
 
         function saveData() {
-            localStorage.setItem('epta_sms_chats', JSON.stringify(chats));
-            localStorage.setItem('epta_sms_messages', JSON.stringify(messages));
+            localStorage.setItem('epta_sms_chats_v2', JSON.stringify(chats));
+            localStorage.setItem('epta_sms_messages_v2', JSON.stringify(messages));
+            localStorage.setItem('epta_blocked_chats', JSON.stringify(chatBlockedStatus));
+            localStorage.setItem('epta_chat_wallpapers_v2', JSON.stringify(chatWallpapers));
+            localStorage.setItem('epta_copy_protection', isCopyProtectionEnabled);
         }
 
+        // ========== УТИЛИТЫ ==========
         function formatTime(date) {
             const d = new Date(date);
             const now = new Date();
@@ -1416,6 +1676,293 @@
             }
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = message;
+            toast.style.borderColor = isError ? '#ff5555' : '#61DE2A';
+            toast.style.color = isError ? '#ff5555' : '#61DE2A';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function isChatBlocked(chatId) {
+            return chatBlockedStatus[chatId] === true;
+        }
+
+        // ========== ЗАЩИТА ОТ КОПИРОВАНИЯ ==========
+        function checkCopyAllowed() {
+            if (isCopyProtectionEnabled && currentChatId) {
+                showToast('Копирование запрещено в этом чате', true);
+                return false;
+            }
+            return true;
+        }
+
+        function checkContextMenu() {
+            if (isCopyProtectionEnabled && currentChatId) {
+                return false;
+            }
+            return true;
+        }
+
+        function toggleCopyProtection() {
+            if (!currentChatId) return;
+            isCopyProtectionEnabled = !isCopyProtectionEnabled;
+            saveData();
+            
+            const btn = document.getElementById('copyProtectionBtn');
+            if (isCopyProtectionEnabled) {
+                btn.innerHTML = '📋 Разрешить копирование';
+                showToast('Запрет копирования включен');
+            } else {
+                btn.innerHTML = '📋 Запретить копирование';
+                showToast('Копирование разрешено');
+            }
+            renderMessages();
+        }
+
+        // ========== БЛОКИРОВКА ЧАТА ==========
+        function toggleBlockChat() {
+            if (!currentChatId) return;
+            
+            const isBlocked = chatBlockedStatus[currentChatId];
+            if (isBlocked) {
+                delete chatBlockedStatus[currentChatId];
+                showToast('Чат разблокирован');
+                document.getElementById('blockChatBtn').innerHTML = '🔒 Заблокировать';
+                const textarea = document.getElementById('messageInput');
+                const sendBtn = document.querySelector('.send-btn');
+                if (textarea) textarea.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+            } else {
+                chatBlockedStatus[currentChatId] = true;
+                showToast('Чат заблокирован');
+                document.getElementById('blockChatBtn').innerHTML = '🔓 Разблокировать';
+                const textarea = document.getElementById('messageInput');
+                const sendBtn = document.querySelector('.send-btn');
+                if (textarea) textarea.disabled = true;
+                if (sendBtn) sendBtn.disabled = true;
+            }
+            saveData();
+            renderChats();
+        }
+
+        // ========== УДАЛЕНИЕ ЧАТА ==========
+        function deleteChat() {
+            if (!currentChatId) return;
+            
+            if (confirm('Вы уверены, что хотите удалить этот чат? Восстановить его будет невозможно.')) {
+                const index = chats.findIndex(c => c.id === currentChatId);
+                if (index !== -1) {
+                    chats.splice(index, 1);
+                    delete messages[currentChatId];
+                    delete chatBlockedStatus[currentChatId];
+                    delete chatWallpapers[currentChatId];
+                    saveData();
+                    
+                    currentChatId = null;
+                    document.getElementById('chatName').textContent = 'Выберите чат';
+                    document.getElementById('chatStatus').textContent = '';
+                    document.getElementById('chatMessages').innerHTML = '<div class="empty-chat"><img src="../png/comment.png" alt=""><p>Выберите чат, чтобы начать общение</p></div>';
+                    document.getElementById('chatInputWrapper').style.display = 'none';
+                    
+                    renderChats();
+                    removeChatWallpaper();
+                    showToast('Чат удален');
+                }
+            }
+        }
+
+        // ========== ЭКСПОРТ ЧАТА ==========
+        function exportChat() {
+            if (!currentChatId) return;
+            
+            const chat = chats.find(c => c.id === currentChatId);
+            const msgs = messages[currentChatId] || [];
+            
+            let exportText = `=== ЭКСПОРТ ЧАТА ===\n`;
+            exportText += `Чат: ${chat.name}\n`;
+            exportText += `Дата экспорта: ${new Date().toLocaleString()}\n`;
+            exportText += `Тип: ${chat.type === 'personal' ? 'Личный чат' : 'Группа'}\n`;
+            exportText += `Всего сообщений: ${msgs.length}\n`;
+            exportText += `\n=== ИСТОРИЯ СООБЩЕНИЙ ===\n\n`;
+            
+            msgs.forEach(msg => {
+                const sender = msg.senderId === 'current' ? 'Вы' : (testUsers.find(u => u.id === msg.senderId)?.name || 'Пользователь');
+                const time = new Date(msg.time).toLocaleString();
+                exportText += `[${time}] ${sender}: ${msg.text}\n`;
+            });
+            
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chat_${chat.name}_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Чат экспортирован');
+        }
+
+        // ========== ОБОИ (НЕПРОЗРАЧНЫЕ) ==========
+        function removeChatWallpaper() {
+            const smsGrid = document.getElementById('smsGrid');
+            const oldWallpaper = document.querySelector('.chat-wallpaper');
+            const oldVideo = document.querySelector('.chat-wallpaper-video');
+            if (oldWallpaper) oldWallpaper.remove();
+            if (oldVideo) oldVideo.remove();
+            smsGrid.style.background = '';
+            smsGrid.style.backdropFilter = '';
+            currentWallpaperElement = null;
+        }
+
+        function applyDefaultWallpaper(type) {
+            removeChatWallpaper();
+            const smsGrid = document.getElementById('smsGrid');
+            if (type === 'default1') {
+                smsGrid.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e)';
+                smsGrid.style.backdropFilter = 'none';
+            } else if (type === 'default2') {
+                smsGrid.style.background = 'linear-gradient(135deg, #2d1b3a, #1a1a2e)';
+                smsGrid.style.backdropFilter = 'none';
+            } else {
+                smsGrid.style.background = 'rgba(0, 0, 0, 0.85)';
+                smsGrid.style.backdropFilter = 'blur(10px)';
+            }
+        }
+
+        function applyPhotoWallpaper(url) {
+            removeChatWallpaper();
+            const smsGrid = document.getElementById('smsGrid');
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'chat-wallpaper';
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.zIndex = '-1';
+            // Убираем прозрачность
+            smsGrid.style.position = 'relative';
+            smsGrid.style.background = 'transparent';
+            smsGrid.style.backdropFilter = 'none';
+            smsGrid.appendChild(img);
+            currentWallpaperElement = img;
+        }
+
+        function applyVideoWallpaper(url) {
+            removeChatWallpaper();
+            const smsGrid = document.getElementById('smsGrid');
+            const video = document.createElement('video');
+            video.src = url;
+            video.className = 'chat-wallpaper-video';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsinline = true;
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.zIndex = '-1';
+            // Убираем прозрачность
+            smsGrid.style.position = 'relative';
+            smsGrid.style.background = 'transparent';
+            smsGrid.style.backdropFilter = 'none';
+            smsGrid.appendChild(video);
+            currentWallpaperElement = video;
+            video.play().catch(e => console.log('Video autoplay failed:', e));
+        }
+
+        function setChatWallpaper(type) {
+            if (!currentChatId) {
+                showToast('Сначала выберите чат', true);
+                return;
+            }
+            
+            if (type === null) {
+                delete chatWallpapers[currentChatId];
+                removeChatWallpaper();
+                const smsGrid = document.getElementById('smsGrid');
+                smsGrid.style.background = 'rgba(0, 0, 0, 0.85)';
+                smsGrid.style.backdropFilter = 'blur(10px)';
+                showToast('Обои сброшены');
+            } else if (type === 'default1' || type === 'default2') {
+                chatWallpapers[currentChatId] = { type: 'default', variant: type };
+                applyDefaultWallpaper(type);
+                showToast('Обои применены');
+            }
+            saveData();
+            document.getElementById('wallpaperSelector').classList.remove('active');
+        }
+
+        function uploadPhotoWallpaper() {
+            if (!currentChatId) {
+                showToast('Сначала выберите чат', true);
+                return;
+            }
+            document.getElementById('photoUploadInput').click();
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const url = e.target.result;
+                chatWallpapers[currentChatId] = { type: 'photo', url: url };
+                applyPhotoWallpaper(url);
+                saveData();
+                showToast('Фото обои установлены');
+                document.getElementById('wallpaperSelector').classList.remove('active');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        // Открытие Telegram бота при попытке использовать премиум-функцию
+        function uploadVideoWallpaper() {
+            if (!currentChatId) {
+                showToast('Сначала выберите чат', true);
+                return;
+            }
+            // Открываем Telegram бота для оформления подписки
+            openTelegramBot();
+            showToast('Видео обои доступны по подписке. Открываем бота...');
+        }
+
+        function applyChatWallpaperFromData(wallpaperData) {
+            if (!wallpaperData) {
+                removeChatWallpaper();
+                const smsGrid = document.getElementById('smsGrid');
+                smsGrid.style.background = 'rgba(0, 0, 0, 0.85)';
+                smsGrid.style.backdropFilter = 'blur(10px)';
+                return;
+            }
+            
+            if (wallpaperData.type === 'default') {
+                applyDefaultWallpaper(wallpaperData.variant);
+            } else if (wallpaperData.type === 'photo') {
+                applyPhotoWallpaper(wallpaperData.url);
+            } else if (wallpaperData.type === 'video') {
+                applyVideoWallpaper(wallpaperData.url);
+            }
+        }
+
+        // ========== ОТРИСОВКА ==========
         function renderChats() {
             const container = document.getElementById('chatsScroll');
             if (!container) return;
@@ -1423,14 +1970,15 @@
             const sorted = [...chats].sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
             
             container.innerHTML = sorted.map(chat => {
+                const isBlocked = chatBlockedStatus[chat.id];
                 return `
-                <div class="chat-item ${currentChatId === chat.id ? 'active' : ''}" onclick="selectChat('${chat.id}')">
+                <div class="chat-item ${currentChatId === chat.id ? 'active' : ''} ${isBlocked ? 'blocked' : ''}" onclick="selectChat('${chat.id}')">
                     <div class="chat-avatar-small ${chat.type === 'group' ? 'group' : ''}">
                         <img src="${chat.avatar}" alt="" onerror="this.src='../png/portrait.png'">
                     </div>
                     <div class="chat-info">
                         <div class="chat-name">
-                            ${escapeHtml(chat.name)}
+                            ${escapeHtml(chat.name)} ${isBlocked ? '🔒' : ''}
                         </div>
                         <div class="chat-last-message">${escapeHtml(chat.lastMessage || 'Новое сообщение')}</div>
                     </div>
@@ -1465,7 +2013,7 @@
             } else {
                 const userId = chat.participants.find(p => p !== 'current');
                 const user = testUsers.find(u => u.id === userId);
-                chatStatus.textContent = user ? (user.status === 'online' ? '🟢 Онлайн' : '⚫ Не в сети') : '';
+                chatStatus.textContent = user ? (user.status === 'online' ? 'Онлайн' : 'Не в сети') : '';
             }
             
             if (chatHeaderInfo) {
@@ -1481,6 +2029,20 @@
             
             const inputWrapper = document.getElementById('chatInputWrapper');
             if (inputWrapper) inputWrapper.style.display = 'flex';
+            
+            const isBlocked = chatBlockedStatus[chatId];
+            const textarea = document.getElementById('messageInput');
+            const sendBtn = document.querySelector('.send-btn');
+            if (textarea) textarea.disabled = isBlocked || false;
+            if (sendBtn) sendBtn.disabled = isBlocked || false;
+            
+            const blockBtn = document.getElementById('blockChatBtn');
+            if (blockBtn) {
+                blockBtn.innerHTML = isBlocked ? '🔓 Разблокировать' : '🔒 Заблокировать';
+            }
+            
+            const wallpaperData = chatWallpapers[chatId];
+            applyChatWallpaperFromData(wallpaperData);
             
             renderMessages();
             
@@ -1512,7 +2074,7 @@
                 const sender = testUsers.find(u => u.id === msg.senderId);
                 
                 return `
-                    <div class="message ${isOutgoing ? 'outgoing' : 'incoming'}">
+                    <div class="message ${isOutgoing ? 'outgoing' : 'incoming'} ${isCopyProtectionEnabled ? 'no-copy' : ''}">
                         <div class="message-bubble">
                             ${!isOutgoing && chat?.type === 'group' ? `<div class="message-author">${escapeHtml(sender?.name || 'unknown')}</div>` : ''}
                             ${escapeHtml(msg.text)}
@@ -1532,6 +2094,11 @@
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text || !currentChatId) return;
+            
+            if (chatBlockedStatus[currentChatId]) {
+                showToast('Чат заблокирован, отправка сообщений невозможна', true);
+                return;
+            }
             
             const newMsg = {
                 id: 'msg_' + Date.now(),
@@ -1563,6 +2130,7 @@
         function simulateReply(chatId) {
             const chat = chats.find(c => c.id === chatId);
             if (!chat || currentChatId !== chatId) return;
+            if (chatBlockedStatus[chatId]) return;
             
             const replyTexts = ['Круто! 👍', 'Понял, принято', 'Спасибо!', 'Хорошо', '👍', 'Окей', 'Заценю', 'Согласен', 'Отлично!', 'Подумаю над этим'];
             const randomText = replyTexts[Math.floor(Math.random() * replyTexts.length)];
@@ -1593,135 +2161,24 @@
             if (currentChatId === chatId) renderMessages();
         }
 
-        function createNewChat() {
-            const modal = document.getElementById('newChatModal');
-            if (modal) modal.classList.add('active');
-            const input = document.getElementById('newChatName');
-            if (input) input.value = '';
-        }
-
-        function closeNewChatModal() {
-            const modal = document.getElementById('newChatModal');
-            if (modal) modal.classList.remove('active');
-        }
-
-        function createChat() {
-            const name = document.getElementById('newChatName').value.trim();
-            const type = document.getElementById('newChatType').value;
-            if (!name) return;
-            
-            const newChat = {
-                id: 'chat_' + Date.now(),
-                type: type,
-                name: name,
-                avatar: type === 'group' ? '../png/users-alt.png' : '../png/portrait.png',
-                participants: ['current'],
-                lastMessage: 'Чат создан',
-                lastMessageTime: new Date().toISOString(),
-                unread: 0
-            };
-            
-            if (type === 'personal') {
-                newChat.participants.push('user_' + Date.now());
-            } else {
-                newChat.participants.push('user_' + Date.now(), 'user1', 'user2');
-            }
-            
-            chats.unshift(newChat);
-            messages[newChat.id] = [{ id: 'msg_start', senderId: 'current', text: 'Чат создан!', time: new Date().toISOString(), read: true }];
-            
-            saveData();
-            renderChats();
-            selectChat(newChat.id);
-            closeNewChatModal();
-        }
-
-        let parallaxCard = null, parallaxBg = null, parallaxShadow = null, animFrame = null;
-        let targetRotX = 0, targetRotY = 0, currentRotX = 0, currentRotY = 0;
-        let targetBgX = 0, targetBgY = 0, currentBgX = 0, currentBgY = 0;
-        let targetShadowX = 0, targetShadowY = 0, currentShadowX = 0, currentShadowY = 0;
-
-        function initParallax() {
-            const container = document.querySelector('.cards-container');
-            const card = document.getElementById('profileCard3d');
-            const bg = document.getElementById('cardBgImg');
-            const shadow = document.getElementById('cardsShadow');
-            
-            if (!container || !card) return;
-            
-            parallaxCard = card;
-            parallaxBg = bg;
-            parallaxShadow = shadow;
-            
-            card.classList.remove('animate-in', 'animate-out');
-            card.style.transition = 'none';
-            card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            if (bg) { bg.style.transition = 'none'; bg.style.transform = 'translate(0px, 0px) scale(1.15)'; }
-            if (shadow) { shadow.style.transition = 'none'; shadow.style.transform = 'translate(0px, 0px)'; shadow.style.opacity = '0.5'; }
-            
-            void card.offsetHeight;
-            
-            card.style.transition = 'transform 0.05s linear';
-            if (bg) bg.style.transition = 'transform 0.05s linear';
-            if (shadow) shadow.style.transition = 'transform 0.05s linear, opacity 0.1s ease';
-            
-            function onMove(e) {
-                const rect = container.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                targetRotY = ((x - centerX) / centerX) * 18;
-                targetRotX = -((y - centerY) / centerY) * 14;
-                targetBgX = ((x - centerX) / centerX) * 30;
-                targetBgY = ((y - centerY) / centerY) * 25;
-                targetShadowX = ((x - centerX) / centerX) * 20;
-                targetShadowY = ((y - centerY) / centerY) * 15;
-            }
-            
-            function onLeave() {
-                targetRotX = 0; targetRotY = 0;
-                targetBgX = 0; targetBgY = 0;
-                targetShadowX = 0; targetShadowY = 0;
-            }
-            
-            function animate() {
-                currentRotX += (targetRotX - currentRotX) * 0.12;
-                currentRotY += (targetRotY - currentRotY) * 0.12;
-                currentBgX += (targetBgX - currentBgX) * 0.12;
-                currentBgY += (targetBgY - currentBgY) * 0.12;
-                currentShadowX += (targetShadowX - currentShadowX) * 0.12;
-                currentShadowY += (targetShadowY - currentShadowY) * 0.12;
-                
-                if (parallaxCard) parallaxCard.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
-                if (parallaxBg) parallaxBg.style.transform = `translate(${currentBgX}px, ${currentBgY}px) scale(1.15)`;
-                if (parallaxShadow) {
-                    parallaxShadow.style.transform = `translate(${currentShadowX}px, ${currentShadowY}px)`;
-                    let intensity = 0.4 + Math.abs(currentRotX) / 30 + Math.abs(currentRotY) / 30;
-                    if (intensity > 0.7) intensity = 0.7;
-                    parallaxShadow.style.opacity = intensity;
+        // ========== МЕНЮ ==========
+        function toggleChatMenu() {
+            const menu = document.getElementById('chatDropdownMenu');
+            menu.classList.toggle('active');
+            document.addEventListener('click', function closeMenu(e) {
+                if (!menu.contains(e.target) && !e.target.closest('.chat-action-btn')) {
+                    menu.classList.remove('active');
+                    document.removeEventListener('click', closeMenu);
                 }
-                animFrame = requestAnimationFrame(animate);
-            }
-            
-            container.removeEventListener('mousemove', onMove);
-            container.removeEventListener('mouseleave', onLeave);
-            container.addEventListener('mousemove', onMove);
-            container.addEventListener('mouseleave', onLeave);
-            
-            if (animFrame) cancelAnimationFrame(animFrame);
-            animFrame = requestAnimationFrame(animate);
+            });
         }
 
-        function stopParallax() {
-            if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
-            if (parallaxCard) { parallaxCard.style.transform = ''; parallaxCard.style.transition = ''; }
-            if (parallaxBg) { parallaxBg.style.transform = ''; parallaxBg.style.transition = ''; }
-            if (parallaxShadow) { parallaxShadow.style.transform = ''; parallaxShadow.style.opacity = '0.5'; parallaxShadow.style.transition = ''; }
-            targetRotX = targetRotY = targetBgX = targetBgY = targetShadowX = targetShadowY = 0;
-            currentRotX = currentRotY = currentBgX = currentBgY = currentShadowX = currentShadowY = 0;
+        function openWallpaperSelector() {
+            const selector = document.getElementById('wallpaperSelector');
+            selector.classList.toggle('active');
         }
 
+        // ========== ПРОФИЛЬ ==========
         function openGroupProfile(chatId) {
             const chat = chats.find(c => c.id === chatId);
             if (!chat || chat.type !== 'group') return;
@@ -1835,6 +2292,8 @@
         }
 
         function openProfileOverlay(userId, chatId) {
+            if (!userId || userId === 'group' || userId === 'current') return;
+            
             const userData = usersProfileData[userId] || usersProfileData['user1'];
             const chat = chats.find(c => c.id === chatId);
             
@@ -1847,18 +2306,40 @@
             const ageEl = document.getElementById('profileAge');
             const genderEl = document.getElementById('profileGender');
             const squadEl = document.getElementById('profileSquad');
+            const detailsContainer = document.getElementById('profileDetails');
+            const openBtn = document.getElementById('profileOpenBtn');
             
             if (avatarEl) avatarEl.src = chat?.avatar || userData.avatar || '../png/portrait.png';
             if (bgImgEl) bgImgEl.src = chat?.avatar || userData.avatar || '../png/portrait.png';
             if (nameEl) nameEl.textContent = userData.name || 'Пользователь';
             if (usernameEl) usernameEl.textContent = userData.username || '@username';
-            if (statusEl) statusEl.textContent = userData.status === 'online' ? '🟢 Онлайн' : (userData.status === 'offline' ? '⚫ Не в сети' : '👥 Группа');
+            if (statusEl) statusEl.textContent = userData.status === 'online' ? 'Онлайн' : (userData.status === 'offline' ? 'Не в сети' : 'Группа');
             if (cityEl) cityEl.textContent = userData.city || 'Не указан';
             if (ageEl) ageEl.textContent = userData.age || '—';
             if (genderEl) genderEl.textContent = userData.gender || '—';
             if (squadEl) squadEl.textContent = userData.squad || '—';
             
-            const openBtn = document.getElementById('profileOpenBtn');
+            if (detailsContainer) {
+                detailsContainer.innerHTML = `
+                    <div class="profile-card-detail">
+                        <span class="profile-card-detail-label">Город:</span>
+                        <span class="profile-card-detail-value" id="profileCity">${userData.city || 'Не указан'}</span>
+                    </div>
+                    <div class="profile-card-detail">
+                        <span class="profile-card-detail-label">Возраст:</span>
+                        <span class="profile-card-detail-value" id="profileAge">${userData.age || '—'}</span>
+                    </div>
+                    <div class="profile-card-detail">
+                        <span class="profile-card-detail-label">Пол:</span>
+                        <span class="profile-card-detail-value" id="profileGender">${userData.gender || '—'}</span>
+                    </div>
+                    <div class="profile-card-detail">
+                        <span class="profile-card-detail-label">Сквад:</span>
+                        <span class="profile-card-detail-value" id="profileSquad">${userData.squad || '—'}</span>
+                    </div>
+                `;
+            }
+            
             if (openBtn) {
                 openBtn.innerHTML = '<img src="../png/portrait.png" class="icon-18" alt=""> Открыть страницу';
                 openBtn.onclick = () => {
@@ -1894,16 +2375,140 @@
             }, 400);
         }
 
+        // ========== ПАРАЛЛАКС ==========
+        let parallaxCard = null, parallaxBg = null, parallaxShadow = null, animFrame = null;
+        let targetRotX = 0, targetRotY = 0, currentRotX = 0, currentRotY = 0;
+        let targetBgX = 0, targetBgY = 0, currentBgX = 0, currentBgY = 0;
+        let targetShadowX = 0, targetShadowY = 0, currentShadowX = 0, currentShadowY = 0;
+
+        function initParallax() {
+            const container = document.querySelector('.cards-container');
+            const card = document.getElementById('profileCard3d');
+            const bg = document.getElementById('cardBgImg');
+            const shadow = document.getElementById('cardsShadow');
+            
+            if (!container || !card) return;
+            
+            parallaxCard = card;
+            parallaxBg = bg;
+            parallaxShadow = shadow;
+            
+            card.classList.remove('animate-in', 'animate-out');
+            card.style.transition = 'none';
+            card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            if (bg) { bg.style.transition = 'none'; bg.style.transform = 'translate(0px, 0px) scale(1.15)'; }
+            if (shadow) { shadow.style.transition = 'none'; shadow.style.transform = 'translate(0px, 0px)'; shadow.style.opacity = '0.5'; }
+            
+            void card.offsetHeight;
+            
+            card.style.transition = 'transform 0.05s linear';
+            if (bg) bg.style.transition = 'transform 0.05s linear';
+            if (shadow) shadow.style.transition = 'transform 0.05s linear, opacity 0.1s ease';
+            
+            function onMove(e) {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                targetRotY = ((x - centerX) / centerX) * 18;
+                targetRotX = -((y - centerY) / centerY) * 14;
+                targetBgX = ((x - centerX) / centerX) * 30;
+                targetBgY = ((y - centerY) / centerY) * 25;
+                targetShadowX = ((x - centerX) / centerX) * 20;
+                targetShadowY = ((y - centerY) / centerY) * 15;
+            }
+            
+            function onLeave() {
+                targetRotX = 0; targetRotY = 0;
+                targetBgX = 0; targetBgY = 0;
+                targetShadowX = 0; targetShadowY = 0;
+            }
+            
+            function animate() {
+                currentRotX += (targetRotX - currentRotX) * 0.12;
+                currentRotY += (targetRotY - currentRotY) * 0.12;
+                currentBgX += (targetBgX - currentBgX) * 0.12;
+                currentBgY += (targetBgY - currentBgY) * 0.12;
+                currentShadowX += (targetShadowX - currentShadowX) * 0.12;
+                currentShadowY += (targetShadowY - currentShadowY) * 0.12;
+                
+                if (parallaxCard) parallaxCard.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+                if (parallaxBg) parallaxBg.style.transform = `translate(${currentBgX}px, ${currentBgY}px) scale(1.15)`;
+                if (parallaxShadow) {
+                    parallaxShadow.style.transform = `translate(${currentShadowX}px, ${currentShadowY}px)`;
+                    let intensity = 0.4 + Math.abs(currentRotX) / 30 + Math.abs(currentRotY) / 30;
+                    if (intensity > 0.7) intensity = 0.7;
+                    parallaxShadow.style.opacity = intensity;
+                }
+                animFrame = requestAnimationFrame(animate);
+            }
+            
+            container.removeEventListener('mousemove', onMove);
+            container.removeEventListener('mouseleave', onLeave);
+            container.addEventListener('mousemove', onMove);
+            container.addEventListener('mouseleave', onLeave);
+            
+            if (animFrame) cancelAnimationFrame(animFrame);
+            animFrame = requestAnimationFrame(animate);
+        }
+
+        function stopParallax() {
+            if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+            if (parallaxCard) { parallaxCard.style.transform = ''; parallaxCard.style.transition = ''; }
+            if (parallaxBg) { parallaxBg.style.transform = ''; parallaxBg.style.transition = ''; }
+            if (parallaxShadow) { parallaxShadow.style.transform = ''; parallaxShadow.style.opacity = '0.5'; parallaxShadow.style.transition = ''; }
+            targetRotX = targetRotY = targetBgX = targetBgY = targetShadowX = targetShadowY = 0;
+            currentRotX = currentRotY = currentBgX = currentBgY = currentShadowX = currentShadowY = 0;
+        }
+
+        // ========== ПРОЧИЕ ФУНКЦИИ ==========
+        function createNewChat() {
+            const modal = document.getElementById('newChatModal');
+            if (modal) modal.classList.add('active');
+            const input = document.getElementById('newChatName');
+            if (input) input.value = '';
+        }
+
+        function closeNewChatModal() {
+            const modal = document.getElementById('newChatModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function createChat() {
+            const name = document.getElementById('newChatName').value.trim();
+            const type = document.getElementById('newChatType').value;
+            if (!name) return;
+            
+            const newChat = {
+                id: 'chat_' + Date.now(),
+                type: type,
+                name: name,
+                avatar: type === 'group' ? '../png/users-alt.png' : '../png/portrait.png',
+                participants: ['current'],
+                lastMessage: 'Чат создан',
+                lastMessageTime: new Date().toISOString(),
+                unread: 0
+            };
+            
+            if (type === 'personal') {
+                newChat.participants.push('user_' + Date.now());
+            } else {
+                newChat.participants.push('user_' + Date.now(), 'user1', 'user2');
+            }
+            
+            chats.unshift(newChat);
+            messages[newChat.id] = [{ id: 'msg_start', senderId: 'current', text: 'Чат создан!', time: new Date().toISOString(), read: true }];
+            
+            saveData();
+            renderChats();
+            selectChat(newChat.id);
+            closeNewChatModal();
+        }
+
         function toggleMobileChats() {
             const chatsList = document.getElementById('chatsList');
             if (chatsList) chatsList.classList.toggle('mobile-show');
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         function createFallingNumbers() {
@@ -1930,6 +2535,7 @@
             if (panel) panel.classList.toggle('active');
         }
 
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', function() {
             createFallingNumbers();
             loadData();
@@ -1965,6 +2571,32 @@
                 }
             });
         });
+        
+        // Глобальные функции
+        window.toggleMenu = toggleMenu;
+        window.selectChat = selectChat;
+        window.sendMessage = sendMessage;
+        window.createNewChat = createNewChat;
+        window.closeNewChatModal = closeNewChatModal;
+        window.createChat = createChat;
+        window.openProfileOverlay = openProfileOverlay;
+        window.closeProfileOverlay = closeProfileOverlay;
+        window.toggleMobileChats = toggleMobileChats;
+        window.openGroupProfile = openGroupProfile;
+        window.toggleChatMenu = toggleChatMenu;
+        window.exportChat = exportChat;
+        window.deleteChat = deleteChat;
+        window.toggleBlockChat = toggleBlockChat;
+        window.toggleCopyProtection = toggleCopyProtection;
+        window.openWallpaperSelector = openWallpaperSelector;
+        window.setChatWallpaper = setChatWallpaper;
+        window.uploadPhotoWallpaper = uploadPhotoWallpaper;
+        window.uploadVideoWallpaper = uploadVideoWallpaper;
+        window.handlePhotoUpload = handlePhotoUpload;
+        window.handleVideoUpload = handleVideoUpload;
+        window.checkCopyAllowed = checkCopyAllowed;
+        window.checkContextMenu = checkContextMenu;
+        window.openTelegramBot = openTelegramBot;
     </script>
 </body>
 </html>

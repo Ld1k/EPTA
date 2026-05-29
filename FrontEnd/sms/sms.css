@@ -128,7 +128,6 @@
     font-size: 15px;
     color: #e0e0e0;
     margin-bottom: 5px;
-    /* === АДАПТАЦИЯ ПОД ДЛИННЫЙ ТЕКСТ === */
     word-break: break-word;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -226,7 +225,6 @@
     font-weight: 800;
     font-size: 18px;
     color: #e0e0e0;
-    /* === АДАПТАЦИЯ ПОД ДЛИННЫЙ ТЕКСТ === */
     word-break: break-word;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -401,15 +399,13 @@
     visibility: visible;
 }
 
-/* Контейнер для 3D карточки */
+/* Контейнер для 3D карточки - ХИТБОКС ПО КАРТОЧКЕ */
 .cards-container {
-    perspective: 1200px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: grab;
+    display: inline-block;
+    width: auto;
     position: relative;
+    perspective: 1200px;
+    cursor: grab;
 }
 
 .cards-container:active {
@@ -420,6 +416,7 @@
 .profile-card-3d {
     position: relative;
     width: 380px;
+    max-width: 90vw;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
     backdrop-filter: blur(20px);
     border: 2px solid #61DE2A;
@@ -430,6 +427,7 @@
     transform-style: preserve-3d;
     transition: box-shadow 0.2s ease, transform 0.05s linear;
     will-change: transform;
+    margin: 0;
 }
 
 /* Анимация IN - появление */
